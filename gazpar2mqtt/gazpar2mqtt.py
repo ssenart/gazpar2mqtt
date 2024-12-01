@@ -2,9 +2,23 @@ import pygazpar
 import paho.mqtt.client as mqtt
 import json
 import datetime
+import traceback
+import logging
 from gazpar2mqtt import config_utils, version
 from typing import Any
 
+
+# ----------------------------------
+availability_payload = [
+    {
+        "topic": "gazpar2mqtt/bridge/state",
+        "value_template": "{{ value_json.state }}"
+    },
+    {
+        "topic": "gazpar2mqtt/unknown/availability",
+        "value_template": "{{ value_json.state }}"
+    }
+]
 
 # ----------------------------------
 device_payload = {
@@ -53,12 +67,22 @@ def publish(config: config_utils.ConfigLoader):
     ha_device_unique_id = config.get("homeassistant.device_unique_id")
 
     # Read Gazpar data
-    data = read_pygazpar_data(grdf_username, grdf_password, grdf_pce_identifier, grdf_last_days)
+    available = True
+    try:
+        data = read_pygazpar_data(grdf_username, grdf_password, grdf_pce_identifier, grdf_last_days)
+    except Exception:
+        errorMessage = f"Error while fetching data from GrDF: {traceback.format_exc()}"
+        logging.warning(errorMessage)
+        data = {}
+        available = False
 
     # Initialize MQTT client
     mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
     mqtt_client.connect(mqtt_broker, mqtt_port, mqtt_keepalive)
     mqtt_client.username_pw_set(mqtt_username, mqtt_password)
+
+    availability_payload[0]["topic"] = f"{mqtt_base_topic}/bridge/availability"
+    availability_payload[1]["topic"] = f"{mqtt_base_topic}/{mqtt_device_name}/availability"
 
     device_payload["identifiers"] = [f"{mqtt_base_topic}_{ha_device_unique_id}"]
     device_payload["name"] = ha_device_name
@@ -67,6 +91,7 @@ def publish(config: config_utils.ConfigLoader):
         # Publish Home Assistant discovery messages
         ha_payloads = config.get("homeassistant.payloads")
         for ha_entity, ha_payload in ha_payloads.items():
+            ha_payload["availability"] = availability_payload
             ha_payload["unique_id"] = f"{ha_device_unique_id}_{ha_entity}_{mqtt_base_topic}"
             ha_payload["attribution"] = attribution
             ha_payload["device"] = device_payload
@@ -86,6 +111,7 @@ def publish(config: config_utils.ConfigLoader):
             "monthly": data.get(pygazpar.Frequency.MONTHLY.value) if not None else [],
             "yearly": data.get(pygazpar.Frequency.YEARLY.value) if not None else []
         }), retain=True)
+    mqtt_client.publish(f"{mqtt_base_topic}/{mqtt_device_name}/availability", json.dumps({"state": "online" if available else "offline"}), retain=True)
 
     # Disconnect MQTT client
     mqtt_client.disconnect()
