@@ -1,0 +1,54 @@
+grdf:
+  username: "!secret grdf.username"
+  password: "!secret grdf.password"
+  pce_identifier: "!secret grdf.pce_identifier"
+  scan_interval: 60
+  last_days: 10 # Number of days of data to retrieve
+
+mqtt:
+  broker: "!secret mqtt.broker"
+  port: "!secret mqtt.port"
+  username: "!secret mqtt.username"
+  password: "!secret mqtt.password"
+  keepalive: 60
+  base_topic: gazpar2mqtt
+  device_name: gazpar
+
+homeassistant:
+  discovery: true
+  discovery_topic: homeassistant
+  device_name: gazpar
+  device_unique_id: 0x52e31847e180405fa4db1053091f4139
+  payloads:
+
+    energy: 
+      object_id: gazpar_energy
+      device_class: energy
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: gazpar2mqtt/gazpar
+      unit_of_measurement: kWh
+      json_attributes_topic: gazpar2mqtt/gazpar
+      value_template: "{{ value_json.energy }}"
+
+    volume: 
+      object_id: gazpar_volume
+      device_class: gas
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: gazpar2mqtt/gazpar
+      unit_of_measurement: "m³"
+      value_template: "{{ value_json.volume }}"
+    
+    temperature: 
+      object_id: gazpar_temperature
+      device_class: temperature
+      enabled_by_default: true
+      icon: mdi:thermometer
+      state_class: measurement
+      state_topic: gazpar2mqtt/gazpar
+      unit_of_measurement: "°C"
+      value_template: "{{ value_json.temperature }}"
+   
