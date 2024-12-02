@@ -4,8 +4,10 @@ import logging
 import traceback
 from gazpar2mqtt import __version__
 from gazpar2mqtt import config_utils
+from gazpar2mqtt.bridge import Bridge
 
 
+# ----------------------------------
 def main():
     """Main function"""
     parser = argparse.ArgumentParser()
@@ -57,6 +59,12 @@ def main():
         # Log configuration
         logging.info(f"Configuration:\n{config.dumps()}")
 
+        # Start the bridge
+        bridge = Bridge(config)
+        bridge.run()
+
+        logging.info("Gazpar2MQTT stopped.")
+
         return 0
 
     except BaseException:
@@ -66,5 +74,6 @@ def main():
         return 1
 
 
+# ----------------------------------
 if __name__ == '__main__':
     sys.exit(main())
