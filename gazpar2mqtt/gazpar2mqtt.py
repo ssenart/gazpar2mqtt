@@ -4,7 +4,7 @@ import json
 import datetime
 import traceback
 import logging
-from gazpar2mqtt import config_utils, version
+from gazpar2mqtt import config_utils, __version__
 from typing import Any
 
 
@@ -26,14 +26,14 @@ device_payload = {
     "manufacturer": "gazpar2mqtt",
     "model": "gazpar2mqtt",
     "name": "unknown",
-    "sw_version": version.__version__,
+    "sw_version": __version__,
     "via_device": "gazpar2mqtt_bridge",
 }
 
 # ----------------------------------
 original_payload = {
     "name": "Gazpar2MQTT",
-    "sw": version.__version__,
+    "sw": __version__,
     "url": "https://github.com/ssenart/gazpar2mqtt",
 }
 

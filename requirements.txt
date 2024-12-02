@@ -1,4 +1,0 @@
-pygazpar
-paho-mqtt
-python-dotenv
-pyyaml

@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "gazpar2mqtt"
+version = "0.1.0"
+description = "Gateway that read GrDF meter data and publish them on MQTT queue"
+authors = ["Stéphane Senart"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+pygazpar = "^1.2.4"
+paho-mqtt = "^2.1.0"
+pyyaml = "^6.0.2"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
