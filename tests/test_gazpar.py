@@ -1,8 +1,8 @@
-from gazpar2mqtt import config_utils, gazpar2mqtt
+from gazpar2mqtt import config_utils, gazpar
 
 
 def test_version():
-    assert gazpar2mqtt.__version__ is not None
+    assert gazpar.__version__ is not None
 
 
 def test_publish():
@@ -11,6 +11,6 @@ def test_publish():
     config.load_secrets()
     config.load_config()
 
-    gazpar2mqtt.publish(config)
+    gazpar.publish(config)
 
     assert True

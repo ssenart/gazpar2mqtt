@@ -1,3 +1,1 @@
-import importlib.metadata
-
-__version__ = importlib.metadata.version('gazpar2mqtt')
+from gazpar2mqtt.version import __version__  # noqa: F401

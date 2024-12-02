@@ -51,3 +51,6 @@ class ConfigLoader:
             return value
         except (KeyError, TypeError):
             return default
+
+    def dumps(self) -> str:
+        return yaml.dump(self.config)

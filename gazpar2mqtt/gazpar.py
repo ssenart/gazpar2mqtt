@@ -4,7 +4,8 @@ import json
 import datetime
 import traceback
 import logging
-from gazpar2mqtt import config_utils, __version__
+from gazpar2mqtt import __version__
+from gazpar2mqtt import config_utils
 from typing import Any
 
 

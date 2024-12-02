@@ -1,3 +1,8 @@
+logging:
+  file: log/gazpar2mqtt.log
+  level: debug
+  format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
+
 grdf:
   username: "!secret grdf.username"
   password: "!secret grdf.password"
