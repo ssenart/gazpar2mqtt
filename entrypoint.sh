@@ -23,6 +23,9 @@ echo "MQTT_PORT: ${MQTT_PORT}"
 echo "MQTT_USERNAME: ${MQTT_USERNAME}"
 echo "MQTT_PASSWORD: ***************"
 
+# Export environment variables
+export GRDF_USERNAME GRDF_PASSWORD GRDF_PCE_IDENTIFIER GRDF_SCAN_INTERVAL GRDF_LAST_DAYS MQTT_BROKER MQTT_PORT MQTT_USERNAME MQTT_PASSWORD
+
 # Instantiate the template config
 envsubst < "/app/config/configuration.template.yaml" > "/app/config/configuration.yaml"
 envsubst < "/app/config/secrets.template.yaml" > "/app/config/secrets.yaml"
