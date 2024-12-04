@@ -1,5 +1,6 @@
 logging:
   file: log/gazpar2mqtt.log
+  console: true
   level: debug
   format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
 

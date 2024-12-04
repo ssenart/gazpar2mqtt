@@ -35,6 +35,7 @@ def main():
 
         # Set up logging
         logging_file = config.get("logging.file")
+        logging_console = bool(config.get("logging.console"))
         logging_level = config.get("logging.level")
         logging_format = config.get("logging.format")
 
@@ -53,6 +54,15 @@ def main():
             level = logging.INFO
 
         logging.basicConfig(filename=logging_file, level=level, format=logging_format)
+
+        if logging_console:
+            # Add a console handler manually
+            console_handler = logging.StreamHandler()
+            console_handler.setLevel(level)  # Set logging level for the console
+            console_handler.setFormatter(logging.Formatter(logging_format))  # Customize console format
+
+            # Get the root logger and add the console handler
+            logging.getLogger().addHandler(console_handler)
 
         logging.info(f"Starting Gazpar2MQTT version {__version__}")
 
