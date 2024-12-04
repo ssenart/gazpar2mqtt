@@ -13,9 +13,5 @@ services:
       - GRDF_USERNAME=
       - GRDF_PASSWORD=
       - GRDF_PCE_IDENTIFIER=
-      - GRDF_SCAN_INTERVAL=480
-      - GRDF_LAST_DAYS=720
       - MQTT_BROKER=
       - MQTT_PORT=1883
-      - MQTT_USERNAME=
-      - MQTT_PASSWORD=
