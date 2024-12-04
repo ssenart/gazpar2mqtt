@@ -39,15 +39,15 @@ def main():
         logging_format = config.get("logging.format")
 
         # Convert logging level to integer
-        if logging_level == "DEBUG":
+        if logging_level.upper() == "DEBUG":
             level = logging.DEBUG
-        elif logging_level == "INFO":
+        elif logging_level.upper() == "INFO":
             level = logging.INFO
-        elif logging_level == "WARNING":
+        elif logging_level.upper() == "WARNING":
             level = logging.WARNING
-        elif logging_level == "ERROR":
+        elif logging_level.upper() == "ERROR":
             level = logging.ERROR
-        elif logging_level == "CRITICAL":
+        elif logging_level.upper() == "CRITICAL":
             level = logging.CRITICAL
         else:
             level = logging.INFO
