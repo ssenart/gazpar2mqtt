@@ -38,11 +38,11 @@ ENV VIRTUAL_ENV=/app/.venv \
 COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY entrypoint.sh /app
-RUN chmod +x /app/entrypoint.sh
-COPY gazpar2mqtt/ gazpar2mqtt
-RUN  mkdir config
-RUN  mkdir log
-COPY config/configuration.template.yaml config
-COPY config/secrets.template.yaml config
+RUN  chmod +x /app/entrypoint.sh
+COPY gazpar2mqtt/ /app/gazpar2mqtt
+RUN  mkdir /app/config
+RUN  mkdir /app/log
+COPY config/configuration.template.yaml /app/config
+COPY config/secrets.template.yaml /app/config
 
 ENTRYPOINT ["/app/entrypoint.sh"]
