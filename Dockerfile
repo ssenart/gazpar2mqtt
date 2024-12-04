@@ -13,6 +13,8 @@ WORKDIR /app
 COPY pyproject.toml poetry.lock ./
 RUN touch README.md
 
+COPY gazpar2mqtt/ /app/gazpar2mqtt
+
 RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
 
 # The runtime image, used to just run the code provided its virtual environment
