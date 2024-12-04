@@ -1,6 +1,9 @@
 # The builder image, used to build the virtual environment
 FROM python:3.12-bookworm as builder
 
+# Install the required system dependencies: envsubst
+RUN apt-get update && apt-get install -y gettext-base
+
 RUN pip install poetry==1.8.4
 
 ENV POETRY_NO_INTERACTION=1 \
