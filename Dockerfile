@@ -44,7 +44,5 @@ RUN  mkdir config
 RUN  mkdir log
 COPY config/configuration.template.yaml config
 COPY config/secrets.template.yaml config
-RUN  envsubst < config/configuration.template.yaml > config/configuration.yaml
-RUN  envsubst < config/secrets.template.yaml > config/secrets.yaml
 
 ENTRYPOINT ["/app/entrypoint.sh"]
