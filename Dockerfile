@@ -1,9 +1,6 @@
 # The builder image, used to build the virtual environment
 FROM python:3.12-bookworm AS builder
 
-# Install the required system dependencies: envsubst
-RUN apt-get update && apt-get install -y gettext-base
-
 RUN pip install poetry==1.8.4
 
 ENV POETRY_NO_INTERACTION=1 \
@@ -32,6 +29,9 @@ FROM python:3.12-slim-bookworm AS runtime
 # MQTT_USERNAME: The username to use to authenticate to the MQTT broker
 # MQTT_PASSWORD: The password to use to authenticate to the MQTT broker
 
+# Install the required system dependencies: envsubst
+RUN apt-get update && apt-get install -y gettext-base
+
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
 
@@ -39,7 +39,7 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY entrypoint.sh /app
 RUN chmod +x /app/entrypoint.sh
-COPY gazpar2mqtt ./gazpar2mqtt
+COPY gazpar2mqtt/ .gazpar2mqtt
 RUN  mkdir config
 RUN  mkdir log
 COPY config/configuration.template.yaml config
