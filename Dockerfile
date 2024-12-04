@@ -39,7 +39,7 @@ COPY --from=builder ${VIRTUAL_ENV} ${VIRTUAL_ENV}
 
 COPY entrypoint.sh /app
 RUN chmod +x /app/entrypoint.sh
-COPY gazpar2mqtt/ .gazpar2mqtt
+COPY gazpar2mqtt/ gazpar2mqtt
 RUN  mkdir config
 RUN  mkdir log
 COPY config/configuration.template.yaml config
