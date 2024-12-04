@@ -28,5 +28,5 @@ envsubst < "/app/config/configuration.template.yaml" > "/app/config/configuratio
 envsubst < "/app/config/secrets.template.yaml" > "/app/config/secrets.yaml"
 
 # Run the gazpar2mqtt python program
-cd /app/config
+cd /app
 python3 -m gazpar2mqtt

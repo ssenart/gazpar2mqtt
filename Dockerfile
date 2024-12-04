@@ -1,5 +1,5 @@
 # The builder image, used to build the virtual environment
-FROM python:3.12-bookworm as builder
+FROM python:3.12-bookworm AS builder
 
 # Install the required system dependencies: envsubst
 RUN apt-get update && apt-get install -y gettext-base
