@@ -13,7 +13,7 @@ class Bridge:
     def __init__(self, config: config_utils.ConfigLoader):
 
         # GrDF scan interval (in seconds)
-        self._grdf_scan_interval = config.get("grdf.scan_interval")
+        self._grdf_scan_interval = int(config.get("grdf.scan_interval"))
 
         # MQTT configuration
         self._mqtt_broker = config.get("mqtt.broker")
