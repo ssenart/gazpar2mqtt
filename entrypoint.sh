@@ -4,11 +4,11 @@
 : "${GRDF_USERNAME:?GRDF_USERNAME is required and not set.}"
 : "${GRDF_PASSWORD:?GRDF_PASSWORD is required and not set.}"
 : "${GRDF_PCE_IDENTIFIER:?GRDF_PCE_IDENTIFIER is required and not set.}"
-: "${GRDF_SCAN_INTERVAL:="\"480\""}" # 8 hours
-: "${GRDF_LAST_DAYS:="\"1095\""}" # 3 years
+: "${GRDF_SCAN_INTERVAL:="480"}" # 8 hours
+: "${GRDF_LAST_DAYS:="1095"}" # 3 years
 
 : "${MQTT_BROKER:?MQTT_BROKER is required and not set.}"
-: "${MQTT_PORT:="\"1883\""}" # Default MQTT port
+: "${MQTT_PORT:="1883"}" # Default MQTT port
 : "${MQTT_USERNAME:="\"\""}" # No user
 : "${MQTT_PASSWORD:="\"\""}" # No password
 

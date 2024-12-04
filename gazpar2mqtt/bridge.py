@@ -78,9 +78,9 @@ class Bridge:
                 logging.info("Gazpar data published to MQTT.")
 
                 # Wait before next scan
-                logging.info(f"Waiting {self._grdf_scan_interval} seconds before next scan...")
+                logging.info(f"Waiting {self._grdf_scan_interval} minutes before next scan...")
 
-                self._await_with_interrupt(self._grdf_scan_interval, 5)
+                self._await_with_interrupt(self._grdf_scan_interval * 60, 5)
         except KeyboardInterrupt:
             print("Keyboard interrupt detected. Shutting down gracefully...")
             logging.info("Keyboard interrupt detected. Shutting down gracefully...")

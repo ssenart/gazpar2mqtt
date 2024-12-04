@@ -7,7 +7,7 @@ grdf:
   username: "!secret grdf.username"
   password: "!secret grdf.password"
   pce_identifier: "!secret grdf.pce_identifier"
-  scan_interval: 60
+  scan_interval: 1 # Number of minutes between each data retrieval
   last_days: 10 # Number of days of data to retrieve
 
 mqtt:
