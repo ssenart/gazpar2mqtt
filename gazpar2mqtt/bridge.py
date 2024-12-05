@@ -4,6 +4,7 @@ import signal
 import paho.mqtt.client as mqtt
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.gazpar import Gazpar
+from gazpar2mqtt.homeassistant import HomeAssistant
 
 
 # ----------------------------------
@@ -23,7 +24,6 @@ class Bridge:
         self._mqtt_keepalive = int(config.get("mqtt.keepalive"))
 
         mqtt_base_topic = config.get("mqtt.base_topic")
-        mqtt_device_name = config.get("mqtt.device_name")
 
         # Initialize MQTT client
         self._mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
@@ -33,12 +33,17 @@ class Bridge:
         self._mqtt_client.on_connect = self.on_connect
         self._mqtt_client.on_disconnect = self.on_disconnect
 
+        # Initialize Gazpar
+        self._gazpar = []
+        for grdf_device_config in config.get("grdf.devices"):
+            self._gazpar.append(Gazpar(grdf_device_config, self._mqtt_client, mqtt_base_topic))
+
+        # Initialize Home Assistant
+        self._homeassistant = HomeAssistant(config, self._mqtt_client, mqtt_base_topic)
+
         # Set up signal handler
         signal.signal(signal.SIGINT, self.handle_signal)
         signal.signal(signal.SIGTERM, self.handle_signal)
-
-        # Initialize Gazpar
-        self._gaspar = Gazpar(config, self._mqtt_client, mqtt_base_topic, mqtt_device_name)
 
         # Initialize running flag
         self._running = False
@@ -74,7 +79,15 @@ class Bridge:
             while self._running:
                 # Publish Gazpar data to MQTT
                 logging.info("Publishing Gazpar data to MQTT...")
-                self._gaspar.publish()
+                for gazpar in self._gazpar:
+                    logging.info(f"Publishing data for device '{gazpar.name()}'...")
+                    gazpar.publish()
+                    logging.info(f"Device '{gazpar.name()}' data published to MQTT.")
+
+                logging.info("Publishing Home Assistant data to MQTT...")
+                self._homeassistant.publish()
+                logging.info("Home Assistant data published to MQTT.")
+
                 logging.info("Gazpar data published to MQTT.")
 
                 # Wait before next scan
@@ -85,14 +98,19 @@ class Bridge:
             print("Keyboard interrupt detected. Shutting down gracefully...")
             logging.info("Keyboard interrupt detected. Shutting down gracefully...")
         finally:
-            # Dispose of Gazpar.
-            self._gaspar.dispose()
+            self.dispose()
 
-            # Stop the network loop
-            logging.info("Disconnecting from MQTT broker...")
-            self._mqtt_client.loop_stop()
-            self._mqtt_client.disconnect()
-            logging.info("Disconnected from MQTT broker.")
+    # ----------------------------------
+    def dispose(self):
+        # Dispose of Gazpar.
+        for gazpar in self._gazpar:
+            gazpar.dispose()
+
+        # Stop the network loop
+        logging.info("Disconnecting from MQTT broker...")
+        self._mqtt_client.loop_stop()
+        self._mqtt_client.disconnect()
+        logging.info("Disconnected from MQTT broker.")
 
     # ----------------------------------
     def _await_with_interrupt(self, total_sleep_time: int, check_interval: int):

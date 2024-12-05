@@ -5,11 +5,18 @@ logging:
   format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
 
 grdf:
-  username: "!secret grdf.username"
-  password: "!secret grdf.password"
-  pce_identifier: "!secret grdf.pce_identifier"
   scan_interval: 1 # Number of minutes between each data retrieval
-  last_days: 10 # Number of days of data to retrieve
+  devices:
+  - name: gazpar
+    username: "!secret grdf.username"
+    password: "!secret grdf.password"
+    pce_identifier: "!secret grdf.pce_identifier"
+    last_days: 10 # Number of days of data to retrieve
+  - name: maison
+    username: "!secret grdf.username"
+    password: "!secret grdf.password"
+    pce_identifier: "!secret grdf.pce_identifier"
+    last_days: 10 # Number of days of data to retrieve
 
 mqtt:
   broker: "!secret mqtt.broker"
@@ -18,64 +25,76 @@ mqtt:
   password: "!secret mqtt.password"
   keepalive: 60
   base_topic: gazpar2mqtt
-  device_name: gazpar
 
 homeassistant:
   discovery: true
   discovery_topic: homeassistant
-  device_name: gazpar
-  device_unique_id: 0x52e31847e180405fa4db1053091f4139
-  payloads:
+  devices:    
+  - device_name: gazpar
+    device_unique_id: "0x52e31847e180405"
+    payloads:
+      card: 
+        object_id: gazpar_card
+        device_class: energy
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: kWh
+        json_attributes_topic: gazpar2mqtt/gazpar
+        # json_attributes_template: "{{ value_json.username | tojson }}"
+        # json_attributes_template: ">
+        #   {
+        #     'version': '1.3.10',
+        #     'username': '{{ value_json.username }}',
+        #     'pce': '{{ value_json.pce }}',
+        #     'daily': '{{ value_json.daily }}',
+        #     'weekly': '{{ value_json.weekly }}',
+        #     'monthly': '{{ value_json.monthly }}',
+        #     'yearly': '{{ value_json.yearly }}'
+        #   }"
+        value_template: "{{ value_json.energy }}"
 
-    card: 
-      object_id: gazpar_card
-      device_class: energy
-      enabled_by_default: true
-      icon: mdi:fire
-      state_class: total_increasing
-      state_topic: gazpar2mqtt/gazpar
-      unit_of_measurement: kWh
-      json_attributes_topic: gazpar2mqtt/gazpar
-      # json_attributes_template: "{{ value_json.username | tojson }}"
-      # json_attributes_template: ">
-      #   {
-      #     'version': '1.3.10',
-      #     'username': '{{ value_json.username }}',
-      #     'pce': '{{ value_json.pce }}',
-      #     'daily': '{{ value_json.daily }}',
-      #     'weekly': '{{ value_json.weekly }}',
-      #     'monthly': '{{ value_json.monthly }}',
-      #     'yearly': '{{ value_json.yearly }}'
-      #   }"
-      value_template: "{{ value_json.energy }}"
+      energy: 
+        object_id: gazpar_energy
+        device_class: energy
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: kWh
+        value_template: "{{ value_json.energy }}"
 
-    energy: 
-      object_id: gazpar_energy
-      device_class: energy
-      enabled_by_default: true
-      icon: mdi:fire
-      state_class: total_increasing
-      state_topic: gazpar2mqtt/gazpar
-      unit_of_measurement: kWh
-      value_template: "{{ value_json.energy }}"
-
-    volume: 
-      object_id: gazpar_volume
-      device_class: gas
-      enabled_by_default: true
-      icon: mdi:fire
-      state_class: total_increasing
-      state_topic: gazpar2mqtt/gazpar
-      unit_of_measurement: "m³"
-      value_template: "{{ value_json.volume }}"
-    
-    temperature: 
-      object_id: gazpar_temperature
-      device_class: temperature
-      enabled_by_default: true
-      icon: mdi:thermometer
-      state_class: measurement
-      state_topic: gazpar2mqtt/gazpar
-      unit_of_measurement: "°C"
-      value_template: "{{ value_json.temperature }}"
+      volume: 
+        object_id: gazpar_volume
+        device_class: gas
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: "m³"
+        value_template: "{{ value_json.volume }}"
+      
+      temperature: 
+        object_id: gazpar_temperature
+        device_class: temperature
+        enabled_by_default: true
+        icon: mdi:thermometer
+        state_class: measurement
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: "°C"
+        value_template: "{{ value_json.temperature }}"
    
+  - device_name: maison
+    device_unique_id: "0x5161a161e1651dc"
+    payloads:   
+      energy: 
+        object_id: maison_energy
+        device_class: energy
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/maison
+        unit_of_measurement: kWh
+        value_template: "{{ value_json.energy }}"
+ 

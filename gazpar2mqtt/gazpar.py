@@ -4,53 +4,18 @@ import json
 import datetime
 import traceback
 import logging
-from gazpar2mqtt import __version__
-from gazpar2mqtt import config_utils
 from typing import Any
-
-
-# ----------------------------------
-availability_payload = [
-    {
-        "topic": "gazpar2mqtt/bridge/state",
-        "value_template": "{{ value_json.state }}"
-    },
-    {
-        "topic": "gazpar2mqtt/unknown/availability",
-        "value_template": "{{ value_json.state }}"
-    }
-]
-
-# ----------------------------------
-device_payload = {
-    "identifiers": ["gazpar2mqtt_unknown"],
-    "manufacturer": "gazpar2mqtt",
-    "model": "gazpar2mqtt",
-    "name": "unknown",
-    "sw_version": __version__,
-    "via_device": "gazpar2mqtt_bridge",
-}
-
-# ----------------------------------
-original_payload = {
-    "name": "Gazpar2MQTT",
-    "sw": __version__,
-    "url": "https://github.com/ssenart/gazpar2mqtt",
-}
-
-# ----------------------------------
-attribution = "Data provided by GrDF"
 
 
 # ----------------------------------
 class Gazpar:
 
     # ----------------------------------
-    def __init__(self, config: config_utils.ConfigLoader, mqqtt_client: mqtt.Client, mqtt_base_topic: str, mqtt_device_name: str):
+    def __init__(self, config: dict[str, Any], mqqtt_client: mqtt.Client, mqtt_base_topic: str):
         self._config = config
+        self._mqtt_device_name = config.get("name")
         self._mqtt_client = mqqtt_client
         self._mqtt_base_topic = mqtt_base_topic
-        self._mqtt_device_name = mqtt_device_name
         self._selectByFrequency = {
             pygazpar.Frequency.HOURLY: Gazpar._selectHourly,
             pygazpar.Frequency.DAILY: Gazpar._selectDaily,
@@ -60,20 +25,18 @@ class Gazpar:
         }
 
     # ----------------------------------
+    def name(self):
+        return self._mqtt_device_name
+
+    # ----------------------------------
     # Publish Gaspar data to MQTT
     def publish(self):
 
         # GrDF configuration
-        grdf_username = self._config.get("grdf.username")
-        grdf_password = self._config.get("grdf.password")
-        grdf_pce_identifier = str(self._config.get("grdf.pce_identifier"))
-        grdf_last_days = int(self._config.get("grdf.last_days"))
-
-        # Home Assistant configuration
-        ha_discovery = self._config.get("homeassistant.discovery")
-        ha_discovery_topic = self._config.get("homeassistant.discovery_topic")
-        ha_device_name = self._config.get("homeassistant.device_name")
-        ha_device_unique_id = self._config.get("homeassistant.device_unique_id")
+        grdf_username = self._config.get("username")
+        grdf_password = self._config.get("password")
+        grdf_pce_identifier = str(self._config.get("pce_identifier"))
+        grdf_last_days = int(self._config.get("last_days"))
 
         # Read Gazpar data
         available = True
@@ -84,23 +47,6 @@ class Gazpar:
             logging.warning(errorMessage)
             data = {}
             available = False
-
-        availability_payload[0]["topic"] = f"{self._mqtt_base_topic}/bridge/availability"
-        availability_payload[1]["topic"] = f"{self._mqtt_base_topic}/{self._mqtt_device_name}/availability"
-
-        device_payload["identifiers"] = [f"{self._mqtt_base_topic}_{ha_device_unique_id}"]
-        device_payload["name"] = ha_device_name
-
-        if ha_discovery:
-            # Publish Home Assistant discovery messages
-            ha_payloads = self._config.get("homeassistant.payloads")
-            for ha_entity, ha_payload in ha_payloads.items():
-                ha_payload["availability"] = availability_payload
-                ha_payload["unique_id"] = f"{ha_device_unique_id}_{ha_entity}_{self._mqtt_base_topic}"
-                ha_payload["attribution"] = attribution
-                ha_payload["device"] = device_payload
-                ha_payload["origin"] = original_payload
-                self._mqtt_client.publish(f'{ha_discovery_topic}/sensor/{ha_device_unique_id}/{ha_entity}/config', json.dumps(ha_payload), retain=True)
 
         if available and data is not None and len(data) > 0:
             # Publish data to MQTT
