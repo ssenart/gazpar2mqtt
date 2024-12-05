@@ -117,6 +117,18 @@ class Gazpar:
                     "yearly": data.get(pygazpar.Frequency.YEARLY.value) if not None else []
                 }), retain=True, qos=2)
 
+        # Publish availability
+        self._publish_availability(available)
+
+    # ----------------------------------
+    def dispose(self):
+
+        # Publish availability
+        self._publish_availability(False)
+
+    # ----------------------------------
+    def _publish_availability(self, available: bool):
+
         self._mqtt_client.publish(f"{self._mqtt_base_topic}/{self._mqtt_device_name}/availability", json.dumps({"state": "online" if available else "offline"}), retain=True, qos=2)
 
     # ----------------------------------

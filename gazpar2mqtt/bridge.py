@@ -85,6 +85,9 @@ class Bridge:
             print("Keyboard interrupt detected. Shutting down gracefully...")
             logging.info("Keyboard interrupt detected. Shutting down gracefully...")
         finally:
+            # Dispose of Gazpar.
+            self._gaspar.dispose()
+
             # Stop the network loop
             logging.info("Disconnecting from MQTT broker...")
             self._mqtt_client.loop_stop()
