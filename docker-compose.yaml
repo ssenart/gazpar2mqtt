@@ -4,6 +4,8 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: gazpar2mqtt
+    restart: unless-stopped
+    network_mode: bridge
     volumes:
       - ./config:/app/config
       - ./log:/app/log
@@ -12,4 +14,3 @@ services:
       - GRDF_PASSWORD=
       - GRDF_PCE_IDENTIFIER=
       - MQTT_BROKER=
-      - MQTT_PORT=1883
