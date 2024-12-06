@@ -8,7 +8,7 @@ from gazpar2mqtt import config_utils
 # ----------------------------------
 availability_payload = [
     {
-        "topic": "gazpar2mqtt/bridge/state",
+        "topic": "gazpar2mqtt/bridge/availability",
         "value_template": "{{ value_json.state }}"
     },
     {
@@ -79,6 +79,7 @@ class HomeAssistant:
                 logging.info(f"Publishing Home Assistant entity '{ha_entity}' of device '{ha_device_name}'")
 
                 ha_payload["availability"] = availability_payload
+                ha_payload["availability_mode"] = "all"
                 ha_payload["unique_id"] = f"{ha_device_unique_id}_{ha_entity}_{self._mqtt_base_topic}"
                 ha_payload["attribution"] = attribution
                 ha_payload["device"] = device_payload

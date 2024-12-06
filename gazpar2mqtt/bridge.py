@@ -1,6 +1,7 @@
 import logging
 import time
 import signal
+import json
 import paho.mqtt.client as mqtt
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.gazpar import Gazpar
@@ -23,7 +24,7 @@ class Bridge:
         mqtt_password = config.get("mqtt.password")
         self._mqtt_keepalive = int(config.get("mqtt.keepalive"))
 
-        mqtt_base_topic = config.get("mqtt.base_topic")
+        self._mqtt_base_topic = config.get("mqtt.base_topic")
 
         # Initialize MQTT client
         self._mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
@@ -36,10 +37,10 @@ class Bridge:
         # Initialize Gazpar
         self._gazpar = []
         for grdf_device_config in config.get("grdf.devices"):
-            self._gazpar.append(Gazpar(grdf_device_config, self._mqtt_client, mqtt_base_topic))
+            self._gazpar.append(Gazpar(grdf_device_config, self._mqtt_client, self._mqtt_base_topic))
 
         # Initialize Home Assistant
-        self._homeassistant = HomeAssistant(config, self._mqtt_client, mqtt_base_topic)
+        self._homeassistant = HomeAssistant(config, self._mqtt_client, self._mqtt_base_topic)
 
         # Set up signal handler
         signal.signal(signal.SIGINT, self.handle_signal)
@@ -90,14 +91,24 @@ class Bridge:
 
                 logging.info("Gazpar data published to MQTT.")
 
+                # Publish bridge availability
+                self._mqtt_client.publish(f"{self._mqtt_base_topic}/bridge/availability", json.dumps({"state": "online"}), retain=True, qos=2)
+
                 # Wait before next scan
                 logging.info(f"Waiting {self._grdf_scan_interval} minutes before next scan...")
+
+                # Check if the scan interval is 0 and leave the loop.
+                if self._grdf_scan_interval == 0:
+                    break
 
                 self._await_with_interrupt(self._grdf_scan_interval * 60, 5)
         except KeyboardInterrupt:
             print("Keyboard interrupt detected. Shutting down gracefully...")
             logging.info("Keyboard interrupt detected. Shutting down gracefully...")
         finally:
+            # Publish bridge availability
+            self._mqtt_client.publish(f"{self._mqtt_base_topic}/bridge/availability", json.dumps({"state": "offline"}), retain=True, qos=2)
+
             self.dispose()
 
     # ----------------------------------

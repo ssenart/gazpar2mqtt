@@ -5,7 +5,7 @@ logging:
   format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
 
 grdf:
-  scan_interval: ${GRDF_SCAN_INTERVAL} # Number of minutes between each data retrieval
+  scan_interval: ${GRDF_SCAN_INTERVAL} # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup).
   devices:
   - name: gazpar
     username: "!secret grdf.username"
