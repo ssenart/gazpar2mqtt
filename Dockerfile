@@ -15,7 +15,7 @@ RUN touch README.md
 
 COPY gazpar2mqtt/ /app/gazpar2mqtt
 
-RUN poetry install --without dev --no-root && rm -rf $POETRY_CACHE_DIR
+RUN poetry install --without dev && rm -rf $POETRY_CACHE_DIR
 
 # The runtime image, used to just run the code provided its virtual environment
 FROM python:3.12-slim-bookworm AS runtime
