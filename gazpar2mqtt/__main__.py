@@ -10,7 +10,7 @@ from gazpar2mqtt.bridge import Bridge
 # ----------------------------------
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser(prog="gazpar2mqtt", description="Gateway that reads data from the GrDF counter and posts it to the MQTT queue.")
+    parser = argparse.ArgumentParser(prog="gazpar2mqtt", description="Gateway that reads data from the GrDF meter and posts it to a MQTT queue.")
     parser.add_argument("-v", "--version",
                         action="version",
                         version="Gazpar2MQTT version")
