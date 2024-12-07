@@ -97,7 +97,7 @@ services:
       - MQTT_BROKER=<MQTT broker ip adcress>
 ```
 
-Edit its environment variables section according to your setup.
+Edit the environment variable section according to your setup.
 
 2. Run the container:
 ```sh
