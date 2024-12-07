@@ -29,8 +29,14 @@ echo "GID: $(id -g)"
 export GRDF_USERNAME GRDF_PASSWORD GRDF_PCE_IDENTIFIER GRDF_SCAN_INTERVAL GRDF_LAST_DAYS MQTT_BROKER MQTT_PORT MQTT_USERNAME MQTT_PASSWORD
 
 # Instantiate the template config
-envsubst < "/app/configuration.template.yaml" > "/app/config/configuration.yaml"
-envsubst < "/app/secrets.template.yaml" > "/app/config/secrets.yaml"
+if [ ! -e /app/config/configuration.yaml ]; then
+    envsubst < "/app/configuration.template.yaml" > "/app/config/configuration.yaml"
+fi
+
+# Instantiate the template secrets
+if [ ! -e /app/config/secrets.yaml ]; then
+    envsubst < "/app/secrets.template.yaml" > "/app/config/secrets.yaml"
+fi
 
 # Run the gazpar2mqtt python program
 cd /app
