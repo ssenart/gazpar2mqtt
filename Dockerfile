@@ -30,6 +30,8 @@ FROM python:3.12-slim-bookworm AS runtime
 # MQTT_PORT: The port of the MQTT broker
 # MQTT_USERNAME: The username to use to authenticate to the MQTT broker
 # MQTT_PASSWORD: The password to use to authenticate to the MQTT broker
+# UID: The UID of the user to run the container as
+# GID: The GID of the user to run the container as
 
 # Install the required system dependencies: envsubst
 RUN apt-get update && apt-get install -y gettext-base

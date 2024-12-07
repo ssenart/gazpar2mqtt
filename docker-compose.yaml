@@ -15,3 +15,5 @@ services:
       - GRDF_PASSWORD=
       - GRDF_PCE_IDENTIFIER=
       - MQTT_BROKER=
+      - UID=1000
+      - GID=1000
