@@ -21,8 +21,8 @@ class ConfigLoader:
         """Load the main configuration file and resolve secrets."""
         if os.path.exists(self.config_file):
             with open(self.config_file, 'r', encoding='utf-8') as file:
-                raw_config = yaml.safe_load(file)
-            self.config = self._resolve_secrets(raw_config)
+                self.raw_config = yaml.safe_load(file)
+            self.config = self._resolve_secrets(self.raw_config)
         else:
             raise FileNotFoundError(f"Configuration file '{self.config_file}' not found.")
 
