@@ -5,8 +5,8 @@ UID=${UID:-1000}  # Default UID
 GID=${GID:-1000}  # Default GID
 
 # Create a group and user with the provided UID and GID
-groupadd -g $GID appgroup
-useradd -u $UID -g $GID appuser
+groupadd -g $GID appgroup 2>/dev/null || true
+useradd -m -u $UID -g $GID -d /app appuser 2>/dev/null || true
 
 # Change ownership of the home directory
 chown -R appuser:appgroup /app
