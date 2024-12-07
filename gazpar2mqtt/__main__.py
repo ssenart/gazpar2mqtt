@@ -10,7 +10,7 @@ from gazpar2mqtt.bridge import Bridge
 # ----------------------------------
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(prog="gazpar2mqtt", description="Gateway that reads data from the GrDF counter and posts it to the MQTT queue.")
     parser.add_argument("-v", "--version",
                         action="version",
                         version="Gazpar2MQTT version")
@@ -23,9 +23,9 @@ def main():
                         default="config/secrets.yaml",
                         help="Path to the secret file")
 
-    try:
-        args = parser.parse_args()
+    args = parser.parse_args()
 
+    try:
         # Load configuration files
         config = config_utils.ConfigLoader(args.config, args.secrets)
         config.load_secrets()

@@ -1,13 +1,11 @@
-# gazpar2mqtt
-Gateway that read GrDF meter data and publish them on MQTT queue.
-
-It can be run as a standalone python program.
-
-The preferred way is to use its Docker container.
+# Gazpar2MQTT
+Gateway that reads data from the GrDF counter and posts it to the MQTT queue.
 
 ## Installation
 
-### Using source files
+Gazpar2MQTT can be installed on any host as a standalone program. However, the preferred way is to use its Docker container.
+
+### 1. Using source files
 
 The project requires [Poetry](https://python-poetry.org/) tool for dependency and package management.
 
@@ -24,7 +22,7 @@ $ poetry shell
 
 ```
 
-### Using PIP package
+### 2. Using PIP package
 
 ```sh
 $ cd /path/to/my_install_folder/
@@ -41,7 +39,7 @@ $ pip install gazpar2mqtt
 
 ```
 
-### Using Dockerfile
+### 3. Using Dockerfile
 
 The following steps permit to build the Docker image based on the local source files.
 
@@ -66,10 +64,10 @@ $ docker compose build
 ```
 4. Run the container:
 ```sh
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
-### Using Docker Hub
+### 4. Using Docker Hub
 
 The following steps permits to run a container from an existing image available in the Docker Hub repository.
 
@@ -97,7 +95,140 @@ Edit its environment variables section according to your setup.
 
 2. Run the container:
 ```sh
-$ docker-compose up -d
+$ docker compose up -d
 ```
 
 ## Usage
+
+### Command line
+
+```sh
+$ python -m gazpar2mqtt --config /path/to/configuration.yaml --secrets /path/to/secrets.yaml
+```
+
+### Configuration file
+
+The default configuration file is below.
+
+```yaml
+logging:
+  file: log/gazpar2mqtt.log
+  console: true  
+  level: debug
+  format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
+
+grdf:
+  scan_interval: ${GRDF_SCAN_INTERVAL} # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
+  devices:
+  - name: gazpar
+    username: "!secret grdf.username"
+    password: "!secret grdf.password"
+    pce_identifier: "!secret grdf.pce_identifier"
+    last_days: ${GRDF_LAST_DAYS} # Number of days of data to retrieve
+
+mqtt:
+  broker: "!secret mqtt.broker"
+  port: "!secret mqtt.port"
+  username: "!secret mqtt.username"
+  password: "!secret mqtt.password"
+  keepalive: 60
+  base_topic: gazpar2mqtt
+
+homeassistant:
+  discovery: true
+  discovery_topic: homeassistant
+  devices:    
+  - device_name: gazpar
+    device_unique_id: "0x52e31847e180405"
+    payloads:
+      card: 
+        object_id: gazpar_card
+        device_class: energy
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: kWh
+        json_attributes_topic: gazpar2mqtt/gazpar
+        value_template: "{{ value_json.energy }}"
+
+      energy: 
+        object_id: gazpar_energy
+        device_class: energy
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: kWh
+        value_template: "{{ value_json.energy }}"
+
+      volume: 
+        object_id: gazpar_volume
+        device_class: gas
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: "m³"
+        value_template: "{{ value_json.volume }}"
+      
+      temperature: 
+        object_id: gazpar_temperature
+        device_class: temperature
+        enabled_by_default: true
+        icon: mdi:thermometer
+        state_class: measurement
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: "°C"
+        value_template: "{{ value_json.temperature }}"   
+```
+
+The default secret file:
+
+```yaml
+grdf.username: ${GRDF_USERNAME}
+grdf.password: ${GRDF_PASSWORD}
+grdf.pce_identifier: ${GRDF_PCE_IDENTIFIER}
+
+mqtt.broker: ${MQTT_BROKER}
+mqtt.port: ${MQTT_PORT}
+mqtt.username: ${MQTT_USERNAME}
+mqtt.password: ${MQTT_PASSWORD}
+```
+
+
+### Environment variable for Docker
+
+In a Docker environment, the configurations files are instantiated by replacing the environment variables below in the template files:
+
+| Environment variable | Description | Required | Default value |
+|---|---|---|---|
+| GRDF_USERNAME  |  GrDF account user name  | Yes | - |
+| GRDF_PASSWORD  |  GrDF account password (avoid using special characters) | Yes | - |
+| GRDF_PCE_IDENTIFIER  | GrDF meter PCI identifier  | Yes | - |
+| GRDF_SCAN_INTERVAL  | Period in minutes to refresh meter data (0 means one single refresh and stop) | No | 480 (8 hours) |
+| GRDF_LAST_DAYS | Number of days of history data to retrieve  | No | 1095 (3 years) |
+| MQTT_BROKER  | MQTT broker IP address  | Yes | - |
+| MQTT_BROKER  | MQTT broker port number  | No | 1883 |
+| MQTT_USERNAME  | MQTT broker account user name  | No | "" |
+| MQTT_PASSWORD  | MQTT broker account password  | No | "" |
+
+You can setup them directly in a docker-compose.yaml file (environment section) or from a Docker command line (-e option).
+
+## Contributing
+Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Please make sure to update tests as appropriate.
+
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
+
+## Project status
+Gazpar2MQTT has been initiated for integration with [Home Assistant](https://www.home-assistant.io/).
+
+Since it relies on MQTT, it can be used with any other Home Controllers that works with MQTT technology.
+
+A compatible Home Assistant Lovelace Card is available [here](https://github.com/ssenart/lovelace-gazpar-card)
+
+An alternative is using Home Assistant integration custom component available [here](https://github.com/ssenart/home-assistant-gazpar).
+

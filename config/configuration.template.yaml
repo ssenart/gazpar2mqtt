@@ -37,17 +37,6 @@ homeassistant:
         state_topic: gazpar2mqtt/gazpar
         unit_of_measurement: kWh
         json_attributes_topic: gazpar2mqtt/gazpar
-        # json_attributes_template: "{{ value_json.username | tojson }}"
-        # json_attributes_template: ">
-        #   {
-        #     'version': '1.3.10',
-        #     'username': '{{ value_json.username }}',
-        #     'pce': '{{ value_json.pce }}',
-        #     'daily': '{{ value_json.daily }}',
-        #     'weekly': '{{ value_json.weekly }}',
-        #     'monthly': '{{ value_json.monthly }}',
-        #     'yearly': '{{ value_json.yearly }}'
-        #   }"
         value_template: "{{ value_json.energy }}"
 
       energy: 
