@@ -7,6 +7,7 @@ services:
     container_name: gazpar2mqtt
     restart: unless-stopped
     network_mode: bridge
+    user: "1000:1000"
     volumes:
       - ./docker/config:/app/config
       - ./docker/log:/app/log

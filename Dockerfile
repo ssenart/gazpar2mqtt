@@ -36,6 +36,8 @@ FROM python:3.12-slim-bookworm AS runtime
 # Install the required system dependencies: envsubst
 RUN apt-get update && apt-get install -y gettext-base
 
+WORKDIR /app
+
 ENV VIRTUAL_ENV=/app/.venv \
     PATH="/app/.venv/bin:$PATH"
 
