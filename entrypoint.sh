@@ -11,8 +11,8 @@
 # # Change ownership of the home directory
 # chown -R appuser:appgroup /app
 
-# Switch to the appuser
-exec su - appuser -c "$*"
+# # Switch to the appuser
+# exec su - appuser -c "$*"
 
 # Check/Set default values to optional environment variables
 : "${GRDF_USERNAME:?GRDF_USERNAME is required and not set.}"
