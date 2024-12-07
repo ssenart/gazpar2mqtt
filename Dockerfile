@@ -44,7 +44,7 @@ RUN  chmod +x /app/entrypoint.sh
 COPY gazpar2mqtt/ /app/gazpar2mqtt
 RUN  mkdir /app/config
 RUN  mkdir /app/log
-COPY config/configuration.template.yaml /app/config
-COPY config/secrets.template.yaml /app/config
+COPY config/configuration.template.yaml /app
+COPY config/secrets.template.yaml /app
 
 ENTRYPOINT ["/app/entrypoint.sh"]
