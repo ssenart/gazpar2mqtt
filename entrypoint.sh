@@ -6,13 +6,13 @@ GID=${GID:-1000}  # Default GID
 
 # Create a group and user with the provided UID and GID
 groupadd -g $GID appgroup 2>/dev/null || true
-useradd -m -u $UID -g appgroup appuser 2>/dev/null || true
+useradd -u $UID -g $GID appuser 2>/dev/null || true
 
 # Change ownership of the home directory
 chown -R appuser:appgroup /app
 
 # Switch to the appuser
-exec su - customuser -c "$*"
+exec su - appuser -c "$*"
 
 # Check/Set default values to optional environment variables
 : "${GRDF_USERNAME:?GRDF_USERNAME is required and not set.}"
