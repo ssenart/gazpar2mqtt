@@ -53,4 +53,4 @@ class ConfigLoader:
             return default
 
     def dumps(self) -> str:
-        return yaml.dump(self.config_file)
+        return yaml.dump(self.raw_config)
