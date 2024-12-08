@@ -5,6 +5,7 @@ import datetime
 import traceback
 import logging
 from typing import Any
+from gazpar2mqtt import __version__
 
 
 # ----------------------------------
@@ -48,6 +49,11 @@ class Gazpar:
             data = {}
             available = False
 
+        source = {
+            "name": "Gazpar2MQTT",
+            "version": __version__
+        }
+
         if available and data is not None and len(data) > 0:
             # Publish data to MQTT
             self._mqtt_client.publish(f"{self._mqtt_base_topic}/{self._mqtt_device_name}", json.dumps(
@@ -60,7 +66,10 @@ class Gazpar:
                     "daily": data.get(pygazpar.Frequency.DAILY.value) if not None else [],
                     "weekly": data.get(pygazpar.Frequency.WEEKLY.value) if not None else [],
                     "monthly": data.get(pygazpar.Frequency.MONTHLY.value) if not None else [],
-                    "yearly": data.get(pygazpar.Frequency.YEARLY.value) if not None else []
+                    "yearly": data.get(pygazpar.Frequency.YEARLY.value) if not None else [],
+                    "source": source,
+                    "attribution": "Data provided by GrDF",
+                    "timestamp": datetime.datetime.now().isoformat()
                 }), retain=True, qos=2)
 
         # Publish availability

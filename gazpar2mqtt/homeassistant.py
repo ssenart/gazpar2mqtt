@@ -24,14 +24,14 @@ device_payload = {
     "model": "gazpar2mqtt",
     "name": "unknown",
     "sw_version": __version__,
-    "via_device": "gazpar2mqtt_bridge",
+    "via_device": "gazpar2mqtt",
 }
 
 # ----------------------------------
-original_payload = {
+origin_payload = {
     "name": "Gazpar2MQTT",
-    "sw": __version__,
-    "url": "https://github.com/ssenart/gazpar2mqtt",
+    "sw_version": __version__,
+    "support_url": "https://github.com/ssenart/gazpar2mqtt",
 }
 
 # ----------------------------------
@@ -83,5 +83,5 @@ class HomeAssistant:
                 ha_payload["unique_id"] = f"{ha_device_unique_id}_{ha_entity}_{self._mqtt_base_topic}"
                 ha_payload["attribution"] = attribution
                 ha_payload["device"] = device_payload
-                ha_payload["origin"] = original_payload
+                ha_payload["origin"] = origin_payload
                 self._mqtt_client.publish(f'{ha_discovery_topic}/sensor/{ha_device_unique_id}/{ha_entity}/config', json.dumps(ha_payload), retain=True)
