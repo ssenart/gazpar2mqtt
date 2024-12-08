@@ -1,7 +1,7 @@
 # Gazpar2MQTT
 Gazpar2MQTT is a gateway that reads data from the GrDF (French gas provider) meter and posts it to a MQTT queue.
 
-It is compatible with [Lovelace Garpar Card](https://github.com/ssenart/lovelace-gazpar-card).
+It is compatible with [Lovelace Garpar Card](https://github.com/ssenart/lovelace-gazpar-card) with version >= 1.3.11-alpha.3.
 
 ![Lovelace Garpar Card](images/gazpar-card.png)
 
@@ -202,7 +202,6 @@ mqtt.username: ${MQTT_USERNAME}
 mqtt.password: ${MQTT_PASSWORD}
 ```
 
-
 ### Environment variable for Docker
 
 In a Docker environment, the configurations files are instantiated by replacing the environment variables below in the template files:
@@ -220,6 +219,40 @@ In a Docker environment, the configurations files are instantiated by replacing 
 | MQTT_PASSWORD  | MQTT broker account password  | No | "" |
 
 You can setup them directly in a docker-compose.yaml file (environment section) or from a Docker command line (-e option).
+
+## Publish a new image on Docker Hub
+
+1. List all local images
+
+```sh
+$ docker image ls
+```
+
+2. Build a new local image
+
+```sh
+$ docker compose build
+```
+
+3. Tag the new built image with the version number
+
+```sh
+$ docker image tag ssenart/gazpar2mqtt:latest ssenart/gazpar2mqtt:0.1.0
+```
+
+4. Login in Docker Hub
+
+```sh
+$ docker login
+```
+
+5. Push all the tagged local images to Docker Hub
+
+```sh
+$ docker push --all-tags ssenart/gazpar2mqtt
+```
+
+All the gazpar2mqtt images are available [here](https://hub.docker.com/repository/docker/ssenart/gazpar2mqtt/general).
 
 ## Contributing
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
