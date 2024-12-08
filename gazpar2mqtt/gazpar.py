@@ -50,7 +50,7 @@ class Gazpar:
             available = False
 
         source = {
-            "name": "Gazpar2MQTT",
+            "name": "gazpar2mqtt",
             "version": __version__
         }
 
