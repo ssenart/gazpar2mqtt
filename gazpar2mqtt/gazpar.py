@@ -120,14 +120,31 @@ class Gazpar:
 
             # For low consumption, we also use the energy column in addition to the volume index columns
             # and compute more accurately the consumed energy.
-            while (currentIndex < len(daily_data)) and (float(daily_data[currentIndex][pygazpar.PropertyName.START_INDEX.value]) == float(daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value])):
-                cumulativeEnergy += float(daily_data[currentIndex][pygazpar.PropertyName.ENERGY.value])
+            startIndex = daily_data[currentIndex][pygazpar.PropertyName.START_INDEX.value]
+            endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
+
+            while (startIndex is not None) and (endIndex is not None) and (currentIndex < len(daily_data)) and (float(startIndex) == float(endIndex)):
+                energy = daily_data[currentIndex][pygazpar.PropertyName.ENERGY.value]
+                if energy is not None:
+                    cumulativeEnergy += float(energy)
                 currentIndex += 1
+                startIndex = daily_data[currentIndex][pygazpar.PropertyName.START_INDEX.value]
+                endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
 
             currentIndex = min(currentIndex, len(daily_data) - 1)
 
-            volumeEndIndex = float(daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value])
-            converterFactor = float(daily_data[currentIndex][pygazpar.PropertyName.CONVERTER_FACTOR.value])
+            endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
+            converterFactorStr = daily_data[currentIndex][pygazpar.PropertyName.CONVERTER_FACTOR.value]
+
+            if endIndex is not None:
+                volumeEndIndex = float(endIndex)
+            else:
+                raise ValueError("End index is missing in the daily data.")
+
+            if converterFactorStr is not None:
+                converterFactor = float(converterFactorStr)
+            else:
+                raise ValueError("Converter factor is missing in the daily data.")
 
             res = volumeEndIndex * converterFactor + cumulativeEnergy
 
