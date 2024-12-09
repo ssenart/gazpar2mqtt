@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "gazpar2mqtt"
-version = "0.1.0"
+version = "0.1.1"
 description = "Gateway that read GrDF meter data and publish them on MQTT queue"
 authors = ["Stéphane Senart"]
 license = "MIT"
 readme = "README.md"
+include = ["CHANGELOG.md"]
 
 [tool.poetry.dependencies]
 python = "^3.12"
