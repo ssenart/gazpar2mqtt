@@ -2,7 +2,7 @@ from gazpar2mqtt import config_utils
 from gazpar2mqtt.bridge import Bridge
 
 
-def test_publish():
+def test_run():
 
     # Load configuration
     config = config_utils.ConfigLoader("config/configuration.yaml", "config/secrets.yaml")
