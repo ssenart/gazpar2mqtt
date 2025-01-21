@@ -1,8 +1,10 @@
-import logging
-import time
-import signal
 import json
+import logging
+import signal
+import time
+
 import paho.mqtt.client as mqtt
+
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.gazpar import Gazpar
 from gazpar2mqtt.homeassistant import HomeAssistant

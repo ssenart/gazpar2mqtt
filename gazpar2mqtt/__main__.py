@@ -1,9 +1,9 @@
-import sys
 import argparse
 import logging
+import sys
 import traceback
-from gazpar2mqtt import __version__
-from gazpar2mqtt import config_utils
+
+from gazpar2mqtt import __version__, config_utils
 from gazpar2mqtt.bridge import Bridge
 
 

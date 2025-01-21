@@ -1,9 +1,9 @@
 import json
 import logging
-import paho.mqtt.client as mqtt
-from gazpar2mqtt import __version__
-from gazpar2mqtt import config_utils
 
+import paho.mqtt.client as mqtt
+
+from gazpar2mqtt import __version__, config_utils
 
 # ----------------------------------
 availability_payload = [

@@ -1,7 +1,8 @@
+import paho.mqtt.client as mqtt
+
 import gazpar2mqtt
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.gazpar import Gazpar
-import paho.mqtt.client as mqtt
 
 
 def test_version():

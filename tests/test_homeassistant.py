@@ -1,6 +1,7 @@
+import paho.mqtt.client as mqtt
+
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.homeassistant import HomeAssistant
-import paho.mqtt.client as mqtt
 
 
 def test_publish():
