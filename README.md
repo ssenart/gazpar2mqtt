@@ -1,5 +1,5 @@
 # Gazpar2MQTT
-Gazpar2MQTT is a gateway that reads data from the GrDF (French gas provider) meter and posts it to a MQTT queue.
+Gazpar2MQTT is a gateway that reads data from the GrDF (French gas provider) meter and posts it to a MQTT message broker.
 
 It is compatible with [Lovelace Garpar Card](https://github.com/ssenart/lovelace-gazpar-card) with version >= 1.3.11-alpha.3.
 
