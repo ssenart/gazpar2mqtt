@@ -10,18 +10,27 @@ from gazpar2mqtt.bridge import Bridge
 # ----------------------------------
 def main():
     """Main function"""
-    parser = argparse.ArgumentParser(prog="gazpar2mqtt", description="Gateway that reads data from the GrDF meter and posts it to a MQTT queue.")
-    parser.add_argument("-v", "--version",
-                        action="version",
-                        version="Gazpar2MQTT version")
-    parser.add_argument("-c", "--config",
-                        required=False,
-                        default="config/configuration.yaml",
-                        help="Path to the configuration file")
-    parser.add_argument("-s", "--secrets",
-                        required=False,
-                        default="config/secrets.yaml",
-                        help="Path to the secret file")
+    parser = argparse.ArgumentParser(
+        prog="gazpar2mqtt",
+        description="Gateway that reads data from the GrDF meter and posts it to a MQTT queue.",
+    )
+    parser.add_argument(
+        "-v", "--version", action="version", version="Gazpar2MQTT version"
+    )
+    parser.add_argument(
+        "-c",
+        "--config",
+        required=False,
+        default="config/configuration.yaml",
+        help="Path to the configuration file",
+    )
+    parser.add_argument(
+        "-s",
+        "--secrets",
+        required=False,
+        default="config/secrets.yaml",
+        help="Path to the secret file",
+    )
 
     args = parser.parse_args()
 
@@ -59,7 +68,9 @@ def main():
             # Add a console handler manually
             console_handler = logging.StreamHandler()
             console_handler.setLevel(level)  # Set logging level for the console
-            console_handler.setFormatter(logging.Formatter(logging_format))  # Customize console format
+            console_handler.setFormatter(
+                logging.Formatter(logging_format)
+            )  # Customize console format
 
             # Get the root logger and add the console handler
             logging.getLogger().addHandler(console_handler)
@@ -78,12 +89,14 @@ def main():
         return 0
 
     except BaseException:  # pylint: disable=broad-except
-        errorMessage = f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
+        errorMessage = (
+            f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
+        )
         logging.error(errorMessage)
         print(errorMessage)
         return 1
 
 
 # ----------------------------------
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

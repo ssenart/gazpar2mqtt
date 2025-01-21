@@ -1,3 +1,3 @@
 import importlib.metadata
 
-__version__ = importlib.metadata.version('gazpar2mqtt')
+__version__ = importlib.metadata.version("gazpar2mqtt")
