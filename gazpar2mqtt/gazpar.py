@@ -180,7 +180,10 @@ class Gazpar:
             endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
 
             while (
-                (startIndex is not None) and (endIndex is not None) and (currentIndex < len(daily_data)) and (float(startIndex) == float(endIndex))
+                (startIndex is not None)
+                and (endIndex is not None)  # noqa: W503
+                and (currentIndex < len(daily_data))  # noqa: W503
+                and (float(startIndex) == float(endIndex))  # noqa: W503
             ):
                 energy = daily_data[currentIndex][pygazpar.PropertyName.ENERGY.value]
                 if energy is not None:
@@ -256,7 +259,8 @@ class Gazpar:
                 if (
                     previousYearWeekDate.count(
                         (weekDate.weekday, weekDate.week, weekDate.year)
-                    ) > 0
+                    )
+                    > 0  # noqa: W503
                 ):
                     res.append(reading)
 
