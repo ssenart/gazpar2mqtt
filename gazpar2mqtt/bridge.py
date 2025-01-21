@@ -50,16 +50,16 @@ class Bridge:
         self._running = False
 
     # ----------------------------------
-    def on_connect(self, client, userdata, flags, rc):
+    def on_connect(self, client, userdata, flags, rc):  # pylint: disable=unused-argument
         logging.info(f"Connected to MQTT broker with result code {rc}")
 
     # ----------------------------------
-    def on_disconnect(self, client, userdata, rc):
+    def on_disconnect(self, client, userdata, rc):  # pylint: disable=unused-argument
         logging.info("Disconnected from broker")
 
     # ----------------------------------
     # Graceful shutdown function
-    def handle_signal(self, signum, frame):
+    def handle_signal(self, signum, frame):  # pylint: disable=unused-argument
         print(f"Signal {signum} received. Shutting down gracefully...")
         logging.info(f"Signal {signum} received. Shutting down gracefully...")
         self._running = False

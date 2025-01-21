@@ -77,7 +77,7 @@ def main():
 
         return 0
 
-    except BaseException:
+    except BaseException:  # pylint: disable=broad-except
         errorMessage = f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
         logging.error(errorMessage)
         print(errorMessage)

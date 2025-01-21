@@ -39,7 +39,7 @@ attribution = "Data provided by GrDF"
 
 
 # ----------------------------------
-class HomeAssistant:
+class HomeAssistant:  # pylint: disable=too-few-public-methods
 
     # ----------------------------------
     def __init__(self, config: config_utils.ConfigLoader, mqqtt_client: mqtt.Client, mqtt_base_topic: str):
