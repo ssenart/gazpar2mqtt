@@ -48,8 +48,23 @@ runs:
       run: poetry install --no-interaction
 
     #----------------------------------------------
-    # Build and start HA testing container
-    - name: Build and start HA testing container
+    # Install envsubst
+    - name: Install envsubst
+      run: sudo apt-get update && sudo apt-get install -y gettext-base
+
+    #----------------------------------------------
+    # Prepare test configuration
+    - name: Prepare test configuration
+      env:
+        GRDF_USERNAME: ${{ secrets.GRDF_USERNAME }}
+        GRDF_PASSWORD: ${{ secrets.GRDF_PASSWORD }}
+        GRDF_PCE_IDENTIFIER: ${{ secrets.GRDF_PCE_IDENTIFIER }}
+      run: |
+        envsubst < "tests/config/secrets.template.yaml" > "tests/config/secrets.yaml"
+
+    #----------------------------------------------
+    # Build and start MQTT testing container
+    - name: Build and start MQTT testing container
       shell: bash
       run: docker compose -f tests/containers/docker-compose.yaml up -d
 
@@ -59,7 +74,7 @@ runs:
       shell: bash
       run: |
         for i in {1..30}; do
-          if [ "$(docker inspect --format='{{.State.Health.Status}}' homeassistant)" = "healthy" ]; then
+          if [ "$(docker inspect --format='{{.State.Health.Status}}' mosquitto)" = "healthy" ]; then
             echo "Container is healthy!"
             exit 0
           fi
