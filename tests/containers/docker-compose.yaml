@@ -14,7 +14,7 @@ services:
       - 8080:8080
     # command: "mosquitto -c /config/mosquitto.conf"       
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080" ]
+      test: ["CMD", "mosquitto_sub", "-t", "$$SYS/#", "-C", "1", "-i", "healthcheck", "-W", "3"]
       interval: 10s
       timeout: 5s
       retries: 5
