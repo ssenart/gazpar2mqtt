@@ -1,7 +1,7 @@
-name: "Gazpar2HAWS"
-description: "Gazpar2HAWS is a gateway that reads data history from the GrDF (French gas provider) meter and send it to Home Assistant using WebSocket interface."
+name: "Gazpar2MQTT"
+description: "Gazpar2MQTT is a gateway that reads data history from the GrDF (French gas provider) meter and send it to a MQTT message broker."
 version: "${PACKAGE_VERSION}"
-slug: "gazpar2haws"
+slug: "gazpar2mqtt"
 init: false
 arch:
   - aarch64
@@ -12,20 +12,33 @@ arch:
 homeassistant_api: true
 hassio_api: true
 options:
-  grdf:
-    scan_interval: 480 # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
+  scan_interval: 480 # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
+  devices:
+    - name: gazpar2mqtt # Name of the device in home assistant. It will be used as the entity_id: sensor.{{name}}.
+      username: "" # Email address used to connect to the GrDF website.
+      password: "" # Password used to connect to the GrDF website.
+      pce_identifier: "" # PCE identifier of the meter. It should be a positive integer.
+      last_days: 365 # Number of days of data to retrieve
+  mqtt:
+    broker: "localhost" # MQTT broker IP address/hotname
+    port: 1883 # MQTT broker port.
     username: ""
     password: ""
-    pce_identifier: ""
-    timezone: "Europe/Paris"
-    last_days: 365 # Number of days of data to retrieve.
-    reset: false # If true, the data will be reset before the first data retrieval. If false, the data will be kept and new data will be added.
+    keepalive: 60
+    base_topic: gazpar2mqtt
+
 schema:
-  grdf:
-    scan_interval: int # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
-    username: str
-    password: str
-    pce_identifier: str
-    timezone: str?
-    last_days: int? # Number of days of data to retrieve.
-    reset: bool? # If true, the data will be reset before the first data retrieval. If false, the data will be kept and new data will be added.
+  scan_interval: int # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
+  devices:
+    - name: str # Name of the device in home assistant. It will be used as the entity_id: sensor.{{name}}.
+      username: email # Email address used to connect to the GrDF website.
+      password: password # Password used to connect to the GrDF website.
+      pce_identifier: match(^0|[1-9][0-9]*$) # PCE identifier of the meter. It should be a positive integer.
+      last_days: int? # Number of days of data to retrieve.
+  mqtt:
+    broker: str? # MQTT broker IP address/hotname
+    port: port? # MQTT broker port.
+    username: str? # MQTT broker username.
+    password: password? # MQTT broker password.
+    keepalive: int? # MQTT keepalive value.
+    base_topic: str? # MQTT base topic.

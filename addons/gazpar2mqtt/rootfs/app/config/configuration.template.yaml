@@ -1,22 +1,57 @@
 logging:
-  file: log/gazpar2haws.log
+  file: log/gazpar2mqtt.log
   console: true  
   level: debug
   format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
 
-grdf:
-  scan_interval: ${GRDF_SCAN_INTERVAL} # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
-  devices:
-  - name: gazpar2haws # Name of the device in home assistant. It will be used as the entity_id: sensor.${name}.
-    username: "!secret grdf.username"
-    password: "!secret grdf.password"
-    pce_identifier: "!secret grdf.pce_identifier"
-    timezone: ${GRDF_TIMEZONE} # Timezone of the data. It should be the same as the Home Assistant timezone.
-    last_days: ${GRDF_LAST_DAYS} # Number of days of data to retrieve
-    reset: false # If true, the data will be reset before the first data retrieval. If false, the data will be kept and new data will be added.
+${GRDF_CONFIG}
+
+${MQTT_CONFIG}
 
 homeassistant:
-  host: "!secret homeassistant.host"
-  port: "!secret homeassistant.port"
-  endpoint: ${HOMEASSISTANT_ENDPOINT}  
-  token: "!secret homeassistant.token"
+  discovery: true
+  discovery_topic: homeassistant
+  devices:    
+  - device_name: gazpar
+    device_unique_id: "0x52e31847e180405"
+    payloads:
+      card: 
+        object_id: gazpar_card
+        device_class: energy
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: kWh
+        json_attributes_topic: gazpar2mqtt/gazpar
+        value_template: "{{ value_json.energy }}"
+
+      energy: 
+        object_id: gazpar_energy
+        device_class: energy
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: kWh
+        value_template: "{{ value_json.energy }}"
+
+      volume: 
+        object_id: gazpar_volume
+        device_class: gas
+        enabled_by_default: true
+        icon: mdi:fire
+        state_class: total_increasing
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: "m³"
+        value_template: "{{ value_json.volume }}"
+      
+      temperature: 
+        object_id: gazpar_temperature
+        device_class: temperature
+        enabled_by_default: true
+        icon: mdi:thermometer
+        state_class: measurement
+        state_topic: gazpar2mqtt/gazpar
+        unit_of_measurement: "°C"
+        value_template: "{{ value_json.temperature }}"
