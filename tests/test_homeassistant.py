@@ -1,12 +1,15 @@
+import paho.mqtt.client as mqtt
+
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.homeassistant import HomeAssistant
-import paho.mqtt.client as mqtt
 
 
 def test_publish():
 
     # Load configuration
-    config = config_utils.ConfigLoader("config/configuration.yaml", "config/secrets.yaml")
+    config = config_utils.ConfigLoader(
+        "tests/config/configuration.yaml", "tests/config/secrets.yaml"
+    )
     config.load_secrets()
     config.load_config()
 

@@ -5,7 +5,9 @@ from gazpar2mqtt.bridge import Bridge
 def test_run():
 
     # Load configuration
-    config = config_utils.ConfigLoader("config/configuration.yaml", "config/secrets.yaml")
+    config = config_utils.ConfigLoader(
+        "tests/config/configuration.yaml", "tests/config/secrets.yaml"
+    )
     config.load_secrets()
     config.load_config()
 

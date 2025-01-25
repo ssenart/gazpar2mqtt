@@ -1,8 +1,10 @@
-import logging
-import time
-import signal
 import json
+import logging
+import signal
+import time
+
 import paho.mqtt.client as mqtt
+
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.gazpar import Gazpar
 from gazpar2mqtt.homeassistant import HomeAssistant
@@ -37,10 +39,14 @@ class Bridge:
         # Initialize Gazpar
         self._gazpar = []
         for grdf_device_config in config.get("grdf.devices"):
-            self._gazpar.append(Gazpar(grdf_device_config, self._mqtt_client, self._mqtt_base_topic))
+            self._gazpar.append(
+                Gazpar(grdf_device_config, self._mqtt_client, self._mqtt_base_topic)
+            )
 
         # Initialize Home Assistant
-        self._homeassistant = HomeAssistant(config, self._mqtt_client, self._mqtt_base_topic)
+        self._homeassistant = HomeAssistant(
+            config, self._mqtt_client, self._mqtt_base_topic
+        )
 
         # Set up signal handler
         signal.signal(signal.SIGINT, self.handle_signal)
@@ -50,16 +56,18 @@ class Bridge:
         self._running = False
 
     # ----------------------------------
-    def on_connect(self, client, userdata, flags, rc):
+    def on_connect(
+        self, client, userdata, flags, rc
+    ):  # pylint: disable=unused-argument
         logging.info(f"Connected to MQTT broker with result code {rc}")
 
     # ----------------------------------
-    def on_disconnect(self, client, userdata, rc):
+    def on_disconnect(self, client, userdata, rc):  # pylint: disable=unused-argument
         logging.info("Disconnected from broker")
 
     # ----------------------------------
     # Graceful shutdown function
-    def handle_signal(self, signum, frame):
+    def handle_signal(self, signum, frame):  # pylint: disable=unused-argument
         print(f"Signal {signum} received. Shutting down gracefully...")
         logging.info(f"Signal {signum} received. Shutting down gracefully...")
         self._running = False
@@ -69,7 +77,9 @@ class Bridge:
 
         # Start the network loop in a separate thread
         logging.info("Connecting to MQTT broker...")
-        self._mqtt_client.connect(self._mqtt_broker, self._mqtt_port, self._mqtt_keepalive)
+        self._mqtt_client.connect(
+            self._mqtt_broker, self._mqtt_port, self._mqtt_keepalive
+        )
         self._mqtt_client.loop_start()
         logging.info("Connected to MQTT broker.")
 
@@ -92,10 +102,17 @@ class Bridge:
                 logging.info("Gazpar data published to MQTT.")
 
                 # Publish bridge availability
-                self._mqtt_client.publish(f"{self._mqtt_base_topic}/bridge/availability", json.dumps({"state": "online"}), retain=True, qos=2)
+                self._mqtt_client.publish(
+                    f"{self._mqtt_base_topic}/bridge/availability",
+                    json.dumps({"state": "online"}),
+                    retain=True,
+                    qos=2,
+                )
 
                 # Wait before next scan
-                logging.info(f"Waiting {self._grdf_scan_interval} minutes before next scan...")
+                logging.info(
+                    f"Waiting {self._grdf_scan_interval} minutes before next scan..."
+                )
 
                 # Check if the scan interval is 0 and leave the loop.
                 if self._grdf_scan_interval == 0:
@@ -107,7 +124,12 @@ class Bridge:
             logging.info("Keyboard interrupt detected. Shutting down gracefully...")
         finally:
             # Publish bridge availability
-            self._mqtt_client.publish(f"{self._mqtt_base_topic}/bridge/availability", json.dumps({"state": "offline"}), retain=True, qos=2)
+            self._mqtt_client.publish(
+                f"{self._mqtt_base_topic}/bridge/availability",
+                json.dumps({"state": "offline"}),
+                retain=True,
+                qos=2,
+            )
 
             self.dispose()
 
