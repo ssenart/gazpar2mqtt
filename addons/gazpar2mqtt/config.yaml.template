@@ -20,7 +20,7 @@ options:
       pce_identifier: "" # PCE identifier of the meter. It should be a positive integer.
       last_days: 365 # Number of days of data to retrieve
   mqtt:
-    broker: "localhost" # MQTT broker IP address/hotname
+    broker: "core-mosquitto" # MQTT broker IP address/hotname or mosquitto addon (see https://developers.home-assistant.io/docs/add-ons/communication/)
     port: 1883 # MQTT broker port.
     username: ""
     password: ""

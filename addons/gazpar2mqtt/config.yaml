@@ -1,6 +1,6 @@
 name: "Gazpar2MQTT"
 description: "Gazpar2MQTT is a gateway that reads data history from the GrDF (French gas provider) meter and send it to a MQTT message broker."
-version: "0.1.1"
+version: "0.1.4"
 slug: "gazpar2mqtt"
 init: false
 arch:
@@ -20,7 +20,7 @@ options:
       pce_identifier: "" # PCE identifier of the meter. It should be a positive integer.
       last_days: 365 # Number of days of data to retrieve
   mqtt:
-    broker: "localhost" # MQTT broker IP address/hotname
+    broker: "core-mosquitto" # MQTT broker IP address/hotname or mosquitto addon (see https://developers.home-assistant.io/docs/add-ons/communication/)
     port: 1883 # MQTT broker port.
     username: ""
     password: ""
@@ -43,3 +43,5 @@ schema:
     keepalive: int? # MQTT keepalive value.
     base_topic: str? # MQTT base topic.
 
+services:
+  - mqtt:need

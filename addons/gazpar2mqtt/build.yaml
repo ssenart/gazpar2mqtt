@@ -11,4 +11,4 @@ labels:
   org.opencontainers.image.source: "https://github.com/ssenart/gazpar2mqtt"
   org.opencontainers.image.licenses: "MIT"
 args:
-  GAZPAR2MQTT_VERSION: "0.1.1"
+  GAZPAR2MQTT_VERSION: "0.1.4"

@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bashio
 
 # Load the Add-on configuration in JSON and reformat it to YAML.
-GRDF_JSON="'grdf': { 'scan_interval': $(bashio::addon.config 'scan_interval'), 'devices': $(bashio::addon.config 'devices') } }"""
+GRDF_JSON="{ 'grdf': { 'scan_interval': $(bashio::config 'scan_interval'), 'devices': [ $(bashio::config 'devices') ] } }"
 GRDF_CONFIG=$(echo $GRDF_JSON | yq -P)
 
 MQTT_JSON="{ 'mqtt': $(bashio::config 'mqtt') }"
