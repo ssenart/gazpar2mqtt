@@ -1,4 +1,5 @@
 # Gazpar2MQTT
+
 Gazpar2MQTT is a gateway that reads data from the GrDF (French gas provider) meter and posts it to a MQTT message broker.
 
 It is compatible with [Lovelace Garpar Card](https://github.com/ssenart/lovelace-gazpar-card) with version >= 1.3.11-alpha.3.
@@ -9,26 +10,49 @@ Gazpar2MQTT is using [PyGazpar](https://github.com/ssenart/PyGazpar) library to 
 
 ## Installation
 
-Gazpar2MQTT can be installed on any host as a standalone program. However, the preferred way is to use its Docker container.
+Gazpar2MQTT can be installed in many ways.
 
-### 1. Using source files
+### 1. Home Assistant Add-on
 
-The project requires [Poetry](https://python-poetry.org/) tool for dependency and package management.
+In the **Add-on store**, click **⋮ → Repositories**, fill in **`https://github.com/ssenart/gazpar2mqtt`** and click **Add → Close** or click the **Add repository** button below, click **Add → Close** (You might need to enter the **internal IP address** of your Home Assistant instance first).
 
-```sh
-$ cd /path/to/my_install_folder/
+[![Open your Home Assistant instance and show the add add-on repository dialog with a specific repository URL pre-filled.](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fssenart%2Fgazpar2mqtt)
 
-$ git clone https://github.com/ssenart/gazpar2mqtt.git
+For usage and configuration, read the documentation [here](addons/gazpar2mqtt/DOCS.md).
 
-$ cd gazpar2mqtt
+### 2. Using Docker Hub
 
-$ poetry install
+The following steps permits to run a container from an existing image available in the Docker Hub repository.
 
-$ poetry shell
+1. Copy and save the following docker-compose.yaml file:
 
+```yaml
+services:
+  gazpar2mqtt:
+    image: ssenart/gazpar2mqtt:latest
+    container_name: gazpar2mqtt
+    restart: unless-stopped
+    network_mode: bridge
+    user: "1000:1000"
+    volumes:
+      - ./gazpar2mqtt/config:/app/config
+      - ./gazpar2mqtt/log:/app/log
+    environment:
+      - GRDF_USERNAME=<GrDF account username>
+      - GRDF_PASSWORD=<GrDF account password>
+      - GRDF_PCE_IDENTIFIER=<GrDF PCE meter identifier>
+      - MQTT_BROKER=<MQTT broker ip adcress>
 ```
 
-### 2. Using PIP package
+Edit the environment variable section according to your setup.
+
+2. Run the container:
+
+```sh
+$ docker compose up -d
+```
+
+### 3. Using PIP package
 
 ```sh
 $ cd /path/to/my_install_folder/
@@ -45,63 +69,55 @@ $ pip install gazpar2mqtt
 
 ```
 
-### 3. Using Dockerfile
+### 4. Using Dockerfile
 
 The following steps permit to build the Docker image based on the local source files.
 
 1. Clone the repo locally:
+
 ```sh
 $ cd /path/to/my_install_folder/
 
 $ git clone https://github.com/ssenart/gazpar2mqtt.git
 ```
+
 2. Edit the docker-compose.yaml file by setting the environment variables corresponding to your GrDF account and MQTT setup:
 
 ```yaml
-    environment:
-      - GRDF_USERNAME=<GrDF account username>
-      - GRDF_PASSWORD=<GrDF account password>
-      - GRDF_PCE_IDENTIFIER=<GrDF PCE meter identifier>
-      - MQTT_BROKER=<MQTT broker ip adcress>
+environment:
+  - GRDF_USERNAME=<GrDF account username>
+  - GRDF_PASSWORD=<GrDF account password>
+  - GRDF_PCE_IDENTIFIER=<GrDF PCE meter identifier>
+  - MQTT_BROKER=<MQTT broker ip adcress>
 ```
+
 3. Build the image:
+
 ```sh
 $ docker compose build
 ```
+
 4. Run the container:
+
 ```sh
 $ docker compose up -d
 ```
 
-### 4. Using Docker Hub
+### 5. Using source files
 
-The following steps permits to run a container from an existing image available in the Docker Hub repository.
+The project requires [Poetry](https://python-poetry.org/) tool for dependency and package management.
 
-1. Copy and save the following docker-compose.yaml file:
-
-```yaml
-services:
-  gazpar2mqtt:
-    image: ssenart/gazpar2mqtt:latest  
-    container_name: gazpar2mqtt
-    restart: unless-stopped
-    network_mode: bridge
-    user: "1000:1000"    
-    volumes:
-      - ./gazpar2mqtt/config:/app/config
-      - ./gazpar2mqtt/log:/app/log
-    environment:
-      - GRDF_USERNAME=<GrDF account username>
-      - GRDF_PASSWORD=<GrDF account password>
-      - GRDF_PCE_IDENTIFIER=<GrDF PCE meter identifier>
-      - MQTT_BROKER=<MQTT broker ip adcress>
-```
-
-Edit the environment variable section according to your setup.
-
-2. Run the container:
 ```sh
-$ docker compose up -d
+$ cd /path/to/my_install_folder/
+
+$ git clone https://github.com/ssenart/gazpar2mqtt.git
+
+$ cd gazpar2mqtt
+
+$ poetry install
+
+$ poetry shell
+
 ```
 
 ## Usage
@@ -119,18 +135,18 @@ The default configuration file is below.
 ```yaml
 logging:
   file: log/gazpar2mqtt.log
-  console: true  
+  console: true
   level: debug
-  format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
+  format: "%(asctime)s %(levelname)s [%(name)s] %(message)s"
 
 grdf:
   scan_interval: ${GRDF_SCAN_INTERVAL} # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
   devices:
-  - name: gazpar
-    username: "!secret grdf.username"
-    password: "!secret grdf.password"
-    pce_identifier: "!secret grdf.pce_identifier"
-    last_days: ${GRDF_LAST_DAYS} # Number of days of data to retrieve
+    - name: gazpar
+      username: "!secret grdf.username"
+      password: "!secret grdf.password"
+      pce_identifier: "!secret grdf.pce_identifier"
+      last_days: ${GRDF_LAST_DAYS} # Number of days of data to retrieve
 
 mqtt:
   broker: "!secret mqtt.broker"
@@ -154,7 +170,7 @@ homeassistant:
       json_attributes_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
       value_template: "{{ value_json.energy }}"
 
-    energy: 
+    energy:
       device_class: energy
       enabled_by_default: true
       icon: mdi:fire
@@ -163,7 +179,7 @@ homeassistant:
       unit_of_measurement: kWh
       value_template: "{{ value_json.energy }}"
 
-    volume: 
+    volume:
       device_class: gas
       enabled_by_default: true
       icon: mdi:fire
@@ -171,15 +187,15 @@ homeassistant:
       state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
       unit_of_measurement: "m³"
       value_template: "{{ value_json.volume }}"
-    
-    temperature: 
+
+    temperature:
       device_class: temperature
       enabled_by_default: true
       icon: mdi:thermometer
       state_class: measurement
       state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
       unit_of_measurement: "°C"
-      value_template: "{{ value_json.temperature }}" 
+      value_template: "{{ value_json.temperature }}"
 ```
 
 The default secret file:
@@ -199,17 +215,17 @@ mqtt.password: ${MQTT_PASSWORD}
 
 In a Docker environment, the configurations files are instantiated by replacing the environment variables below in the template files:
 
-| Environment variable | Description | Required | Default value |
-|---|---|---|---|
-| GRDF_USERNAME  |  GrDF account user name  | Yes | - |
-| GRDF_PASSWORD  |  GrDF account password (avoid using special characters) | Yes | - |
-| GRDF_PCE_IDENTIFIER  | GrDF meter PCI identifier  | Yes | - |
-| GRDF_SCAN_INTERVAL  | Period in minutes to refresh meter data (0 means one single refresh and stop) | No | 480 (8 hours) |
-| GRDF_LAST_DAYS | Number of days of history data to retrieve  | No | 1095 (3 years) |
-| MQTT_BROKER  | MQTT broker IP address  | Yes | - |
-| MQTT_BROKER  | MQTT broker port number  | No | 1883 |
-| MQTT_USERNAME  | MQTT broker account user name  | No | "" |
-| MQTT_PASSWORD  | MQTT broker account password  | No | "" |
+| Environment variable | Description                                                                   | Required | Default value  |
+| -------------------- | ----------------------------------------------------------------------------- | -------- | -------------- |
+| GRDF_USERNAME        | GrDF account user name                                                        | Yes      | -              |
+| GRDF_PASSWORD        | GrDF account password (avoid using special characters)                        | Yes      | -              |
+| GRDF_PCE_IDENTIFIER  | GrDF meter PCI identifier                                                     | Yes      | -              |
+| GRDF_SCAN_INTERVAL   | Period in minutes to refresh meter data (0 means one single refresh and stop) | No       | 480 (8 hours)  |
+| GRDF_LAST_DAYS       | Number of days of history data to retrieve                                    | No       | 1095 (3 years) |
+| MQTT_BROKER          | MQTT broker IP address                                                        | Yes      | -              |
+| MQTT_BROKER          | MQTT broker port number                                                       | No       | 1883           |
+| MQTT_USERNAME        | MQTT broker account user name                                                 | No       | ""             |
+| MQTT_PASSWORD        | MQTT broker account password                                                  | No       | ""             |
 
 You can setup them directly in a docker-compose.yaml file (environment section) or from a Docker command line (-e option).
 
@@ -248,14 +264,17 @@ $ docker push --all-tags ssenart/gazpar2mqtt
 All the gazpar2mqtt images are available [here](https://hub.docker.com/repository/docker/ssenart/gazpar2mqtt/general).
 
 ## Contributing
+
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
 
 ## License
+
 [MIT](https://choosealicense.com/licenses/mit/)
 
 ## Project status
+
 Gazpar2MQTT has been initiated for integration with [Home Assistant](https://www.home-assistant.io/).
 
 Since it relies on MQTT, it can be used with any other Home Controllers that works with MQTT technology.
@@ -263,4 +282,3 @@ Since it relies on MQTT, it can be used with any other Home Controllers that wor
 A compatible Home Assistant Lovelace Card is available [here](https://github.com/ssenart/lovelace-gazpar-card)
 
 An alternative is using Home Assistant integration custom component available [here](https://github.com/ssenart/home-assistant-gazpar).
-
