@@ -36,8 +36,10 @@ def test_publish():
 # ----------------------------------
 def test_generate_objectid():
 
-    unique_id = HomeAssistant._generate_unique_objectid(  # pylint: disable=protected-access
-        "test"
+    unique_id = (
+        HomeAssistant._generate_unique_objectid(  # pylint: disable=protected-access
+            "test"
+        )
     )
 
     assert unique_id == "0x9f86d081884c7d65"
