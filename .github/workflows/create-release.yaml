@@ -106,7 +106,7 @@ jobs:
         run: |
           git config --global user.name github-actions
           git config --global user.email github-actions@github.com
-          git add pyproject.toml
+          git add pyproject.toml addons/gazpar2mqtt/config.yaml addons/gazpar2mqtt/build.yaml
           git commit --allow-empty -m "Bump version to ${PACKAGE_VERSION}"
           git push
 
