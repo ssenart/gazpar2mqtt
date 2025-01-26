@@ -91,7 +91,7 @@ class Bridge:
                 # Publish Gazpar data to MQTT
                 logging.info("Publishing Gazpar data to MQTT...")
                 device_names = list[str]()
-                for gazpar in self._gazpar:                    
+                for gazpar in self._gazpar:
                     logging.info(f"Publishing data for device '{gazpar.name()}'...")
                     gazpar.publish()
                     device_names.append(gazpar.name())
