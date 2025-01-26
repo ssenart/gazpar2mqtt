@@ -2,8 +2,6 @@
 
 import sys
 
-import pytest
-
 from gazpar2mqtt import __main__
 
 
