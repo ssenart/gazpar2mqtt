@@ -13,7 +13,7 @@ RUN apk add --no-cache yq
 
 ENV PIP_BREAK_SYSTEM_PACKAGES=1
 
-RUN pip3 install --no-cache-dir gazpar2mqtt==${GAZPAR2MQTT_VERSION}
+RUN pip3 install --no-cache-dir --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ gazpar2mqtt==${GAZPAR2MQTT_VERSION}
 
 WORKDIR /app
 
