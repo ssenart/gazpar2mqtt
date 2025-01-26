@@ -1,10 +1,10 @@
+import hashlib
 import json
 import logging
-import hashlib
 
 import paho.mqtt.client as mqtt
-
 from jinja2 import Template
+
 from gazpar2mqtt import __version__, config_utils
 
 # ----------------------------------
