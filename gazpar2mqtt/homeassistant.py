@@ -68,7 +68,9 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
 
         # Publish Home Assistant device messages
         for ha_device_name in device_names:
-            ha_device_unique_id = HomeAssistant._generate_unique_objectid(ha_device_name)
+            ha_device_unique_id = HomeAssistant._generate_unique_objectid(
+                ha_device_name
+            )
 
             logging.info(
                 f"Publishing Home Assistant device '{ha_device_name}' with unique ID '{ha_device_unique_id}'"
@@ -100,12 +102,14 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
                 if payload.get("state_topic") is not None:
                     template = Template(payload["state_topic"])
                     payload["state_topic"] = template.render(
-                        mqtt_base_topic=self._mqtt_base_topic, device_name=ha_device_name
+                        mqtt_base_topic=self._mqtt_base_topic,
+                        device_name=ha_device_name,
                     )
                 if payload.get("json_attributes_topic") is not None:
                     template = Template(payload["json_attributes_topic"])
                     payload["json_attributes_topic"] = template.render(
-                        mqtt_base_topic=self._mqtt_base_topic, device_name=ha_device_name
+                        mqtt_base_topic=self._mqtt_base_topic,
+                        device_name=ha_device_name,
                     )
                 payload["state_topic"] = f"{self._mqtt_base_topic}/{ha_device_name}"
                 payload["availability"] = availability_payload
