@@ -24,48 +24,40 @@ mqtt:
 homeassistant:
   discovery: true
   discovery_topic: homeassistant
-  devices:    
-  - device_name: gazpar
-    device_unique_id: "0x52e31847e180405"
-    payloads:
-      card: 
-        object_id: gazpar_card
-        device_class: energy
-        enabled_by_default: true
-        icon: mdi:fire
-        state_class: total_increasing
-        state_topic: gazpar2mqtt/gazpar
-        unit_of_measurement: kWh
-        json_attributes_topic: gazpar2mqtt/gazpar
-        value_template: "{{ value_json.energy }}"
+  entities:
+    card:
+      device_class: energy
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: kWh
+      json_attributes_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      value_template: "{{ value_json.energy }}"
 
-      energy: 
-        object_id: gazpar_energy
-        device_class: energy
-        enabled_by_default: true
-        icon: mdi:fire
-        state_class: total_increasing
-        state_topic: gazpar2mqtt/gazpar
-        unit_of_measurement: kWh
-        value_template: "{{ value_json.energy }}"
+    energy: 
+      device_class: energy
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: kWh
+      value_template: "{{ value_json.energy }}"
 
-      volume: 
-        object_id: gazpar_volume
-        device_class: gas
-        enabled_by_default: true
-        icon: mdi:fire
-        state_class: total_increasing
-        state_topic: gazpar2mqtt/gazpar
-        unit_of_measurement: "m³"
-        value_template: "{{ value_json.volume }}"
-      
-      temperature: 
-        object_id: gazpar_temperature
-        device_class: temperature
-        enabled_by_default: true
-        icon: mdi:thermometer
-        state_class: measurement
-        state_topic: gazpar2mqtt/gazpar
-        unit_of_measurement: "°C"
-        value_template: "{{ value_json.temperature }}"
-   
+    volume: 
+      device_class: gas
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: "m³"
+      value_template: "{{ value_json.volume }}"
+    
+    temperature: 
+      device_class: temperature
+      enabled_by_default: true
+      icon: mdi:thermometer
+      state_class: measurement
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: "°C"
+      value_template: "{{ value_json.temperature }}"
