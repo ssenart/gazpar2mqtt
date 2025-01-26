@@ -25,7 +25,7 @@ options:
     username: ""
     password: ""
     keepalive: 60
-    base_topic: gazpar2mqtt
+    base_topic: "gazpar2mqtt"
 
 schema:
   scan_interval: int # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).

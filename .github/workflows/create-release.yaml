@@ -96,6 +96,8 @@ jobs:
       - name: Bump version
         run: |
           envsubst < pyproject.template.toml > pyproject.toml
+          envsubst < addons/gazpar2mqtt/config.yaml.template > addons/gazpar2mqtt/config.yaml
+          envsubst < addons/gazpar2mqtt/build.yaml.template > addons/gazpar2mqtt/build.yaml
 
       #----------------------------------------------
       # Commit the changes
@@ -217,6 +219,6 @@ jobs:
         with:
           image: ssenart/gazpar2mqtt
           version: ${{ needs.prepare.outputs.package-version }}
-          is_latest : ${{ inputs.is_final }}
+          is_latest: ${{ inputs.is_final }}
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
