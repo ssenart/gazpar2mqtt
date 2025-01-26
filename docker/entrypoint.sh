@@ -38,4 +38,5 @@ fi
 
 # Run the gazpar2mqtt python program
 cd /app
-python3 -m gazpar2mqtt
+
+python3 -m gazpar2mqtt --config config/configuration.yaml --secrets config/secrets.yaml

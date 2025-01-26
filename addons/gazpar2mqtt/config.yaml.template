@@ -1,0 +1,44 @@
+name: "Gazpar2MQTT"
+description: "Gazpar2MQTT is a gateway that reads data history from the GrDF (French gas provider) meter and send it to a MQTT message broker."
+version: "${PACKAGE_VERSION}"
+slug: "gazpar2mqtt"
+init: false
+arch:
+  - aarch64
+  - amd64
+  - armhf
+  - armv7
+  - i386
+homeassistant_api: true
+hassio_api: true
+options:
+  scan_interval: 480 # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
+  devices:
+    - name: gazpar # Name of the device in home assistant. It will be used as the entity_id: sensor.{{name}}.
+      username: "" # Email address used to connect to the GrDF website.
+      password: "" # Password used to connect to the GrDF website.
+      pce_identifier: "" # PCE identifier of the meter. It should be a positive integer.
+      last_days: 365 # Number of days of data to retrieve
+  mqtt:
+    broker: "core-mosquitto" # MQTT broker IP address/hotname or mosquitto addon (see https://developers.home-assistant.io/docs/add-ons/communication/)
+    port: 1883 # MQTT broker port.
+    username: ""
+    password: ""
+    keepalive: 60
+    base_topic: gazpar2mqtt
+
+schema:
+  scan_interval: int # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
+  devices:
+    - name: str # Name of the device in home assistant. It will be used as the entity_id: sensor.{{name}}.
+      username: email # Email address used to connect to the GrDF website.
+      password: password # Password used to connect to the GrDF website.
+      pce_identifier: match(^0|[1-9][0-9]*$) # PCE identifier of the meter. It should be a positive integer.
+      last_days: int? # Number of days of data to retrieve.
+  mqtt:
+    broker: str? # MQTT broker IP address/hotname
+    port: port? # MQTT broker port.
+    username: str? # MQTT broker username.
+    password: password? # MQTT broker password.
+    keepalive: int? # MQTT keepalive value.
+    base_topic: str? # MQTT base topic.

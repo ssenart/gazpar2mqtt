@@ -1,8 +1,16 @@
 # Changelog
+
 All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [0.2.0] - 2025-01-26
+
+### Added
+
+[#2](https://github.com/ssenart/gazpar2mqtt/issues/2): Deploy gazpar2mqtt as an HA add-on.
+    Warning: Breaking change on configuration file format.
 
 ## [0.1.4] - 2025-01-22
 

@@ -1,7 +1,9 @@
+import hashlib
 import json
 import logging
 
 import paho.mqtt.client as mqtt
+from jinja2 import Template
 
 from gazpar2mqtt import __version__, config_utils
 
@@ -54,7 +56,7 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
 
     # ----------------------------------
     # Publish HomeAssistant data to MQTT
-    def publish(self):
+    def publish(self, device_names: list[str]) -> None:
 
         # Home Assistant configuration
         ha_discovery = bool(self._config.get("homeassistant.discovery"))
@@ -65,9 +67,10 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
         ha_discovery_topic = self._config.get("homeassistant.discovery_topic")
 
         # Publish Home Assistant device messages
-        for ha_device_config in self._config.get("homeassistant.devices"):
-            ha_device_name = ha_device_config.get("device_name")
-            ha_device_unique_id = ha_device_config.get("device_unique_id")
+        for ha_device_name in device_names:
+            ha_device_unique_id = HomeAssistant._generate_unique_objectid(
+                ha_device_name
+            )
 
             logging.info(
                 f"Publishing Home Assistant device '{ha_device_name}' with unique ID '{ha_device_unique_id}'"
@@ -86,23 +89,52 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
             device_payload["name"] = ha_device_name
 
             # Publish Home Assistant entity messages
-            ha_payloads = ha_device_config.get("payloads")
+            ha_payloads = self._config.get("homeassistant.entities")
+
             for ha_entity, ha_payload in ha_payloads.items():
+
+                payload = ha_payload.copy()
 
                 logging.info(
                     f"Publishing Home Assistant entity '{ha_entity}' of device '{ha_device_name}'"
                 )
-
-                ha_payload["availability"] = availability_payload
-                ha_payload["availability_mode"] = "all"
-                ha_payload["unique_id"] = (
+                payload["object_id"] = f"{ha_device_name}_{ha_entity}"
+                if payload.get("state_topic") is not None:
+                    template = Template(payload["state_topic"])
+                    payload["state_topic"] = template.render(
+                        mqtt_base_topic=self._mqtt_base_topic,
+                        device_name=ha_device_name,
+                    )
+                if payload.get("json_attributes_topic") is not None:
+                    template = Template(payload["json_attributes_topic"])
+                    payload["json_attributes_topic"] = template.render(
+                        mqtt_base_topic=self._mqtt_base_topic,
+                        device_name=ha_device_name,
+                    )
+                payload["state_topic"] = f"{self._mqtt_base_topic}/{ha_device_name}"
+                payload["availability"] = availability_payload
+                payload["availability_mode"] = "all"
+                payload["unique_id"] = (
                     f"{ha_device_unique_id}_{ha_entity}_{self._mqtt_base_topic}"
                 )
-                ha_payload["attribution"] = attribution
-                ha_payload["device"] = device_payload
-                ha_payload["origin"] = origin_payload
+                payload["attribution"] = attribution
+                payload["device"] = device_payload
+                payload["origin"] = origin_payload
                 self._mqtt_client.publish(
                     f"{ha_discovery_topic}/sensor/{ha_device_unique_id}/{ha_entity}/config",
-                    json.dumps(ha_payload),
+                    json.dumps(payload),
                     retain=True,
                 )
+
+    # ----------------------------------
+    # Generate an unique objectid of the device
+    @staticmethod
+    def _generate_unique_objectid(device_name: str) -> str:
+
+        # Compute SHA-256 hash and take the first 8 bytes for a short result
+        hash_bytes = hashlib.sha256(device_name.encode()).digest()[:8]
+
+        # Convert bytes to an integer, then format it as hex with "0x" prefix
+        res = f"0x{int.from_bytes(hash_bytes, 'big'):x}"
+
+        return res

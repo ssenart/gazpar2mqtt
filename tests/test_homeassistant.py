@@ -4,6 +4,7 @@ from gazpar2mqtt import config_utils
 from gazpar2mqtt.homeassistant import HomeAssistant
 
 
+# ----------------------------------
 def test_publish():
 
     # Load configuration
@@ -29,4 +30,16 @@ def test_publish():
     mqtt_client.loop_start()
 
     bridge = HomeAssistant(config, mqtt_client, mqtt_base_topic)
-    bridge.publish()
+    bridge.publish(["maison", "appartement"])
+
+
+# ----------------------------------
+def test_generate_objectid():
+
+    unique_id = (
+        HomeAssistant._generate_unique_objectid(  # pylint: disable=protected-access
+            "test"
+        )
+    )
+
+    assert unique_id == "0x9f86d081884c7d65"

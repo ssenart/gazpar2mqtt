@@ -1,0 +1,50 @@
+logging:
+  file: log/gazpar2mqtt.log
+  console: true  
+  level: debug
+  format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
+
+${GRDF_CONFIG}
+
+${MQTT_CONFIG}
+
+homeassistant:
+  discovery: true
+  discovery_topic: homeassistant
+  entities:
+    card:
+      device_class: energy
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: kWh
+      json_attributes_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      value_template: "{{ value_json.energy }}"
+
+    energy: 
+      device_class: energy
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: kWh
+      value_template: "{{ value_json.energy }}"
+
+    volume: 
+      device_class: gas
+      enabled_by_default: true
+      icon: mdi:fire
+      state_class: total_increasing
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: "m³"
+      value_template: "{{ value_json.volume }}"
+    
+    temperature: 
+      device_class: temperature
+      enabled_by_default: true
+      icon: mdi:thermometer
+      state_class: measurement
+      state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
+      unit_of_measurement: "°C"
+      value_template: "{{ value_json.temperature }}"

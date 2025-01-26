@@ -37,7 +37,7 @@ class Bridge:
         self._mqtt_client.on_disconnect = self.on_disconnect
 
         # Initialize Gazpar
-        self._gazpar = []
+        self._gazpar = list[Gazpar]()
         for grdf_device_config in config.get("grdf.devices"):
             self._gazpar.append(
                 Gazpar(grdf_device_config, self._mqtt_client, self._mqtt_base_topic)
@@ -90,13 +90,15 @@ class Bridge:
             while self._running:
                 # Publish Gazpar data to MQTT
                 logging.info("Publishing Gazpar data to MQTT...")
+                device_names = list[str]()
                 for gazpar in self._gazpar:
                     logging.info(f"Publishing data for device '{gazpar.name()}'...")
                     gazpar.publish()
+                    device_names.append(gazpar.name())
                     logging.info(f"Device '{gazpar.name()}' data published to MQTT.")
 
                 logging.info("Publishing Home Assistant data to MQTT...")
-                self._homeassistant.publish()
+                self._homeassistant.publish(device_names)
                 logging.info("Home Assistant data published to MQTT.")
 
                 logging.info("Gazpar data published to MQTT.")
