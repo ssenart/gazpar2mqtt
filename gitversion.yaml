@@ -6,14 +6,10 @@ assembly-informational-format: '{MajorMinorPatch}{PreReleaseLabel}{env:GITHUB_RU
 
 branches:
   develop:
-    regex: ^develop$
     label: 'a'
   main:
-    regex: ^main$
     label: ''
   release:
-    regex: ^release/(?<BranchName>.+) 
     label: 'b'
   feature:
-    regex: ^feature/(?<BranchName>.+)
     label: '.dev'
