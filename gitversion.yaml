@@ -14,6 +14,12 @@ branches:
   release:
     regex: ^release/(?<BranchName>.+) 
     label: 'b'
+    mode: ContinuousDeployment
+    source-branches: ['main']
+    tracks-release-branches: true
+    is-release-branch: true
+    is-main-branch: false
+    increment: None
   feature:
     regex: ^feature/(?<BranchName>.+)
     label: '.dev'
