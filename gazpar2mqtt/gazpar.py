@@ -136,9 +136,9 @@ class Gazpar:
         )
 
         # Fetch gas meter data
-        dataByFrequency = client.loadSince(
-            pceIdentifier=grdf_pce_identifier,
-            lastNDays=grdf_last_days,
+        dataByFrequency = client.load_since(
+            pce_identifier=grdf_pce_identifier,
+            last_n_days=grdf_last_days,
             frequencies=[
                 pygazpar.Frequency.DAILY,
                 pygazpar.Frequency.WEEKLY,
