@@ -1,6 +1,6 @@
 name: "Gazpar2MQTT"
 description: "Gazpar2MQTT is a gateway that reads data history from the GrDF (French gas provider) meter and send it to a MQTT message broker."
-version: "0.2.1b21"
+version: "0.2.1b22"
 slug: "gazpar2mqtt"
 init: false
 arch:
@@ -26,7 +26,6 @@ options:
     password: ""
     keepalive: 60
     base_topic: gazpar2mqtt
-
 schema:
   scan_interval: int # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
   devices:
