@@ -68,24 +68,14 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
 
         # Publish Home Assistant device messages
         for ha_device_name in device_names:
-            ha_device_unique_id = HomeAssistant._generate_unique_objectid(
-                ha_device_name
-            )
+            ha_device_unique_id = HomeAssistant._generate_unique_objectid(ha_device_name)
 
-            logging.info(
-                f"Publishing Home Assistant device '{ha_device_name}' with unique ID '{ha_device_unique_id}'"
-            )
+            logging.info(f"Publishing Home Assistant device '{ha_device_name}' with unique ID '{ha_device_unique_id}'")
 
-            availability_payload[0][
-                "topic"
-            ] = f"{self._mqtt_base_topic}/bridge/availability"
-            availability_payload[1][
-                "topic"
-            ] = f"{self._mqtt_base_topic}/{ha_device_name}/availability"
+            availability_payload[0]["topic"] = f"{self._mqtt_base_topic}/bridge/availability"
+            availability_payload[1]["topic"] = f"{self._mqtt_base_topic}/{ha_device_name}/availability"
 
-            device_payload["identifiers"] = [
-                f"{self._mqtt_base_topic}_{ha_device_unique_id}"
-            ]
+            device_payload["identifiers"] = [f"{self._mqtt_base_topic}_{ha_device_unique_id}"]
             device_payload["name"] = ha_device_name
 
             # Publish Home Assistant entity messages
@@ -95,9 +85,7 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
 
                 payload = ha_payload.copy()
 
-                logging.info(
-                    f"Publishing Home Assistant entity '{ha_entity}' of device '{ha_device_name}'"
-                )
+                logging.info(f"Publishing Home Assistant entity '{ha_entity}' of device '{ha_device_name}'")
                 payload["object_id"] = f"{ha_device_name}_{ha_entity}"
                 if payload.get("state_topic") is not None:
                     template = Template(payload["state_topic"])
@@ -114,9 +102,7 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
                 payload["state_topic"] = f"{self._mqtt_base_topic}/{ha_device_name}"
                 payload["availability"] = availability_payload
                 payload["availability_mode"] = "all"
-                payload["unique_id"] = (
-                    f"{ha_device_unique_id}_{ha_entity}_{self._mqtt_base_topic}"
-                )
+                payload["unique_id"] = f"{ha_device_unique_id}_{ha_entity}_{self._mqtt_base_topic}"
                 payload["attribution"] = attribution
                 payload["device"] = device_payload
                 payload["origin"] = origin_payload

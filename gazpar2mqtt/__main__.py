@@ -16,9 +16,7 @@ def main():
         prog="gazpar2mqtt",
         description="Gateway that reads data from the GrDF meter and posts it to a MQTT queue.",
     )
-    parser.add_argument(
-        "-v", "--version", action="version", version="Gazpar2MQTT version"
-    )
+    parser.add_argument("-v", "--version", action="version", version="Gazpar2MQTT version")
     parser.add_argument(
         "-c",
         "--config",
@@ -71,9 +69,7 @@ def main():
             # Add a console handler manually
             console_handler = logging.StreamHandler()
             console_handler.setLevel(level)  # Set logging level for the console
-            console_handler.setFormatter(
-                logging.Formatter(logging_format)
-            )  # Customize console format
+            console_handler.setFormatter(logging.Formatter(logging_format))  # Customize console format
 
             # Get the root logger and add the console handler
             logging.getLogger().addHandler(console_handler)
@@ -93,9 +89,7 @@ def main():
         return 0
 
     except BaseException:  # pylint: disable=broad-except
-        errorMessage = (
-            f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
-        )
+        errorMessage = f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
         Logger.error(errorMessage)
         print(errorMessage)
         raise

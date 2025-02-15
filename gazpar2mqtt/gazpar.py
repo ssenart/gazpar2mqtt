@@ -14,9 +14,7 @@ from gazpar2mqtt import __version__
 class Gazpar:
 
     # ----------------------------------
-    def __init__(
-        self, config: dict[str, Any], mqqtt_client: mqtt.Client, mqtt_base_topic: str
-    ):
+    def __init__(self, config: dict[str, Any], mqqtt_client: mqtt.Client, mqtt_base_topic: str):
         self._config = config
         self._mqtt_device_name = config.get("name")
         self._mqtt_client = mqqtt_client
@@ -46,13 +44,9 @@ class Gazpar:
         # Read Gazpar data
         available = True
         try:
-            data = self._read_pygazpar_data(
-                grdf_username, grdf_password, grdf_pce_identifier, grdf_last_days
-            )
+            data = self._read_pygazpar_data(grdf_username, grdf_password, grdf_pce_identifier, grdf_last_days)
         except Exception:  # pylint: disable=broad-except
-            logging.warning(
-                f"Error while fetching data from GrDF: {traceback.format_exc()}"
-            )
+            logging.warning(f"Error while fetching data from GrDF: {traceback.format_exc()}")
             data = {}
             available = False
 
@@ -64,35 +58,15 @@ class Gazpar:
                 f"{self._mqtt_base_topic}/{self._mqtt_device_name}",
                 json.dumps(
                     {
-                        "volume": data[pygazpar.Frequency.DAILY.value][0][
-                            pygazpar.PropertyName.END_INDEX.value
-                        ],
-                        "energy": self._compute_energy(
-                            data[pygazpar.Frequency.DAILY.value]
-                        ),
-                        "temperature": data[pygazpar.Frequency.DAILY.value][0][
-                            pygazpar.PropertyName.TEMPERATURE.value
-                        ],
+                        "volume": data[pygazpar.Frequency.DAILY.value][0][pygazpar.PropertyName.END_INDEX.value],
+                        "energy": self._compute_energy(data[pygazpar.Frequency.DAILY.value]),
+                        "temperature": data[pygazpar.Frequency.DAILY.value][0][pygazpar.PropertyName.TEMPERATURE.value],
                         "username": grdf_username,
                         "pce": grdf_pce_identifier,
-                        "daily": (
-                            data.get(pygazpar.Frequency.DAILY.value) if not None else []
-                        ),
-                        "weekly": (
-                            data.get(pygazpar.Frequency.WEEKLY.value)
-                            if not None
-                            else []
-                        ),
-                        "monthly": (
-                            data.get(pygazpar.Frequency.MONTHLY.value)
-                            if not None
-                            else []
-                        ),
-                        "yearly": (
-                            data.get(pygazpar.Frequency.YEARLY.value)
-                            if not None
-                            else []
-                        ),
+                        "daily": (data.get(pygazpar.Frequency.DAILY.value) if not None else []),
+                        "weekly": (data.get(pygazpar.Frequency.WEEKLY.value) if not None else []),
+                        "monthly": (data.get(pygazpar.Frequency.MONTHLY.value) if not None else []),
+                        "yearly": (data.get(pygazpar.Frequency.YEARLY.value) if not None else []),
                         "source": source,
                         "attribution": "Data provided by GrDF",
                         "timestamp": datetime.datetime.now().isoformat(),
@@ -131,9 +105,7 @@ class Gazpar:
     ) -> dict[str, Any]:
 
         # Initialize PyGazpar client
-        client = pygazpar.Client(
-            pygazpar.JsonWebDataSource(username=grdf_username, password=grdf_password)
-        )
+        client = pygazpar.Client(pygazpar.JsonWebDataSource(username=grdf_username, password=grdf_password))
 
         # Fetch gas meter data
         dataByFrequency = client.load_since(
@@ -154,9 +126,7 @@ class Gazpar:
             data = dataByFrequency.get(frequency.value)
 
             if data is not None and len(data) > 0:
-                dataByFrequency[frequency.value] = self._selectByFrequency[frequency](
-                    data[::-1]
-                )
+                dataByFrequency[frequency.value] = self._selectByFrequency[frequency](data[::-1])
             else:
                 dataByFrequency[frequency.value] = []
 
@@ -174,9 +144,7 @@ class Gazpar:
 
             # For low consumption, we also use the energy column in addition to the volume index columns
             # and compute more accurately the consumed energy.
-            startIndex = daily_data[currentIndex][
-                pygazpar.PropertyName.START_INDEX.value
-            ]
+            startIndex = daily_data[currentIndex][pygazpar.PropertyName.START_INDEX.value]
             endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
 
             while (
@@ -189,19 +157,13 @@ class Gazpar:
                 if energy is not None:
                     cumulativeEnergy += float(energy)
                 currentIndex += 1
-                startIndex = daily_data[currentIndex][
-                    pygazpar.PropertyName.START_INDEX.value
-                ]
-                endIndex = daily_data[currentIndex][
-                    pygazpar.PropertyName.END_INDEX.value
-                ]
+                startIndex = daily_data[currentIndex][pygazpar.PropertyName.START_INDEX.value]
+                endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
 
             currentIndex = min(currentIndex, len(daily_data) - 1)
 
             endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
-            converterFactorStr = daily_data[currentIndex][
-                pygazpar.PropertyName.CONVERTER_FACTOR.value
-            ]
+            converterFactorStr = daily_data[currentIndex][pygazpar.PropertyName.CONVERTER_FACTOR.value]
 
             if endIndex is not None:
                 volumeEndIndex = float(endIndex)
@@ -256,12 +218,7 @@ class Gazpar:
 
                 res.append(reading)
             else:
-                if (
-                    previousYearWeekDate.count(
-                        (weekDate.weekday, weekDate.week, weekDate.year)
-                    )
-                    > 0  # noqa: W503
-                ):
+                if previousYearWeekDate.count((weekDate.weekday, weekDate.week, weekDate.year)) > 0:  # noqa: W503
                     res.append(reading)
 
             index += 1
@@ -282,8 +239,6 @@ class Gazpar:
     @staticmethod
     def _getIsoCalendar(weekly_time_period):
 
-        date = datetime.datetime.strptime(
-            weekly_time_period.split(" ")[1], Gazpar.DATE_FORMAT
-        )
+        date = datetime.datetime.strptime(weekly_time_period.split(" ")[1], Gazpar.DATE_FORMAT)
 
         return date.isocalendar()

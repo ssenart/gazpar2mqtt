@@ -8,9 +8,7 @@ from gazpar2mqtt.homeassistant import HomeAssistant
 def test_publish():
 
     # Load configuration
-    config = config_utils.ConfigLoader(
-        "tests/config/configuration.yaml", "tests/config/secrets.yaml"
-    )
+    config = config_utils.ConfigLoader("tests/config/configuration.yaml", "tests/config/secrets.yaml")
     config.load_secrets()
     config.load_config()
 
@@ -36,10 +34,6 @@ def test_publish():
 # ----------------------------------
 def test_generate_objectid():
 
-    unique_id = (
-        HomeAssistant._generate_unique_objectid(  # pylint: disable=protected-access
-            "test"
-        )
-    )
+    unique_id = HomeAssistant._generate_unique_objectid("test")  # pylint: disable=protected-access
 
     assert unique_id == "0x9f86d081884c7d65"
