@@ -4,12 +4,11 @@ version = "0.2.1b20"
 description = "Gateway that read GrDF meter data and publish them on MQTT queue"
 license = { file = "LICENSE" }
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 authors = [
     { name = "Stéphane Senart" }
 ]
 classifiers = [
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -29,3 +28,28 @@ pytest-asyncio = "^0.25.0"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pylint.'MESSAGES CONTROL']
+ignore = ".venv"
+max-line-length = 120
+disable = "C,W1203,R0902,R0913,R0914,R0917,R0801"
+
+[tool.black]
+exclude = ".venv"
+line-length = 120
+
+[tool.flake8]
+max-line-length = 120
+extend-ignore = [ "E203", "W503", "E704", "E501" ]
+exclude = [".venv"]
+
+[tool.isort]
+profile = "black"
+skip = ".venv"
+
+[tool.mypy]
+exclude = [ ".venv" ]
+
+[tool.ruff]
+exclude = [ ".venv" ]
+line-length = 120
