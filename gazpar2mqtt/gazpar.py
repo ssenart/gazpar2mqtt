@@ -157,8 +157,9 @@ class Gazpar:
                 if energy is not None:
                     cumulativeEnergy += float(energy)
                 currentIndex += 1
-                startIndex = daily_data[currentIndex][pygazpar.PropertyName.START_INDEX.value]
-                endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
+                if currentIndex < len(daily_data):
+                    startIndex = daily_data[currentIndex][pygazpar.PropertyName.START_INDEX.value]
+                    endIndex = daily_data[currentIndex][pygazpar.PropertyName.END_INDEX.value]
 
             currentIndex = min(currentIndex, len(daily_data) - 1)
 
