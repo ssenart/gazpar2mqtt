@@ -96,17 +96,12 @@ jobs:
           virtualenvs-path: .venv
 
       #----------------------------------------------
-      # Install envsubst
-      - name: Install envsubst
-        run: sudo apt-get update && sudo apt-get install -y gettext-base
-
-      #----------------------------------------------
       # Bump version in pyproject.toml, config.yaml and build.yaml
       - name: Bump version to ${{ needs.prepare.outputs.package-version }}
         run: |
           poetry version ${{ needs.prepare.outputs.package-version }}
-          envsubst < addons/gazpar2mqtt/config.yaml.template > addons/gazpar2mqtt/config.yaml
-          envsubst < addons/gazpar2mqtt/build.yaml.template > addons/gazpar2mqtt/build.yaml
+          contents="$(yq '.version = "${{ needs.prepare.outputs.package-version }}"' ./addons/gazpar2mqtt/config.yaml)" && echo -E "${contents}" > ./addons/gazpar2mqtt/config.yaml
+          contents="$(yq '.args.GAZPAR2MQTT_VERSION = "${{ needs.prepare.outputs.package-version }}"' ./addons/gazpar2mqtt/build.yaml)" && echo -E "${contents}" > ./addons/gazpar2mqtt/build.yaml
 
       #----------------------------------------------
       # Commit the changes
