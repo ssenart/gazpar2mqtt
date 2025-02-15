@@ -6,6 +6,8 @@ import traceback
 from gazpar2mqtt import __version__, config_utils
 from gazpar2mqtt.bridge import Bridge
 
+Logger = logging.getLogger(__name__)
+
 
 # ----------------------------------
 def main():
@@ -14,9 +16,7 @@ def main():
         prog="gazpar2mqtt",
         description="Gateway that reads data from the GrDF meter and posts it to a MQTT queue.",
     )
-    parser.add_argument(
-        "-v", "--version", action="version", version="Gazpar2MQTT version"
-    )
+    parser.add_argument("-v", "--version", action="version", version="Gazpar2MQTT version")
     parser.add_argument(
         "-c",
         "--config",
@@ -41,6 +41,7 @@ def main():
         config.load_config()
 
         print(f"Gazpar2MQTT version: {__version__}")
+        print(f"Running on Python version: {sys.version}")
 
         # Set up logging
         logging_file = config.get("logging.file")
@@ -68,33 +69,30 @@ def main():
             # Add a console handler manually
             console_handler = logging.StreamHandler()
             console_handler.setLevel(level)  # Set logging level for the console
-            console_handler.setFormatter(
-                logging.Formatter(logging_format)
-            )  # Customize console format
+            console_handler.setFormatter(logging.Formatter(logging_format))  # Customize console format
 
             # Get the root logger and add the console handler
             logging.getLogger().addHandler(console_handler)
 
-        logging.info(f"Starting Gazpar2MQTT version {__version__}")
+        Logger.info(f"Starting Gazpar2MQTT version {__version__}")
+        Logger.info(f"Running on Python version: {sys.version}")
 
         # Log configuration
-        logging.info(f"Configuration:\n{config.dumps()}")
+        Logger.info(f"Configuration:\n{config.dumps()}")
 
         # Start the bridge
         bridge = Bridge(config)
         bridge.run()
 
-        logging.info("Gazpar2MQTT stopped.")
+        Logger.info("Gazpar2MQTT stopped.")
 
         return 0
 
     except BaseException:  # pylint: disable=broad-except
-        errorMessage = (
-            f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
-        )
-        logging.error(errorMessage)
+        errorMessage = f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
+        Logger.error(errorMessage)
         print(errorMessage)
-        return 1
+        raise
 
 
 # ----------------------------------
