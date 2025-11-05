@@ -9,8 +9,8 @@
 
 : "${MQTT_BROKER:?MQTT_BROKER is required and not set.}"
 : "${MQTT_PORT:="1883"}" # Default MQTT port
-: "${MQTT_USERNAME:="\"\""}" # No user
-: "${MQTT_PASSWORD:="\"\""}" # No password
+: "${MQTT_USERNAME:=""}" # No user
+: "${MQTT_PASSWORD:=""}" # No password
 
 # Display environment variables
 echo "GRDF_USERNAME: ${GRDF_USERNAME}"
