@@ -128,25 +128,33 @@ $ poetry shell
 $ python -m gazpar2mqtt --config /path/to/configuration.yaml --secrets /path/to/secrets.yaml
 ```
 
-### Configuration file
+### Configuration
+
+The configuration is to be provided using two YAML files: a configuration file and a secret file. The latter is used to fill in the `!secret xxxxx` parts in the configuration file.
+
+Both these files may or may not use environment variables.
+
+The construction of the effective configuration works the same for all installation types (container, PIP package, source files...). In order to assist in debugging, the application will log, at startup, the effective configuration as constructed from the config file, the secret file, and any environment variables that are used.
+
+#### Configuration files
 
 The default configuration file is below.
 
 ```yaml
 logging:
-  file: log/gazpar2mqtt.log
+  file: log/gazpar2mqtt.log # Path to the log file. If not provided, logging to file is disabled, and logging to console will be enabled.
   console: true
   level: debug
-  format: "%(asctime)s %(levelname)s [%(name)s] %(message)s"
+  format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
 
 grdf:
   scan_interval: ${GRDF_SCAN_INTERVAL} # Number of minutes between each data retrieval (0 means no scan: a single data retrieval at startup, then stops).
   devices:
-    - name: gazpar
-      username: "!secret grdf.username"
-      password: "!secret grdf.password"
-      pce_identifier: "!secret grdf.pce_identifier"
-      last_days: ${GRDF_LAST_DAYS} # Number of days of data to retrieve
+  - name: gazpar
+    username: "!secret grdf.username"
+    password: "!secret grdf.password"
+    pce_identifier: "!secret grdf.pce_identifier"
+    last_days: ${GRDF_LAST_DAYS} # Number of days of data to retrieve
 
 mqtt:
   broker: "!secret mqtt.broker"
@@ -201,19 +209,21 @@ homeassistant:
 The default secret file:
 
 ```yaml
-grdf.username: ${GRDF_USERNAME}
-grdf.password: ${GRDF_PASSWORD}
-grdf.pce_identifier: ${GRDF_PCE_IDENTIFIER}
+grdf.username: "${GRDF_USERNAME}"
+grdf.password: "${GRDF_PASSWORD}"
+grdf.pce_identifier: "${GRDF_PCE_IDENTIFIER}"
 
-mqtt.broker: ${MQTT_BROKER}
-mqtt.port: ${MQTT_PORT}
-mqtt.username: ${MQTT_USERNAME}
-mqtt.password: ${MQTT_PASSWORD}
+mqtt.broker: "${MQTT_BROKER}"
+mqtt.port: "${MQTT_PORT}"
+mqtt.username: "${MQTT_USERNAME}"
+mqtt.password: "${MQTT_PASSWORD}"
 ```
 
-### Environment variable for Docker
+If you use the container and do not provide a configuration file or secret file, the above default templates will be used automatically: they will be copied to wherever you map `/app/config` to, the first time you execute the container. You must in that case however make sure that the container has the correct access rights, in order to be able to write those files.
 
-In a Docker environment, the configurations files are instantiated by replacing the environment variables below in the template files:
+#### Environment variables
+
+By default, the configuration files make use of the environment variables below:
 
 | Environment variable | Description                                                                   | Required | Default value  |
 | -------------------- | ----------------------------------------------------------------------------- | -------- | -------------- |
@@ -227,11 +237,15 @@ In a Docker environment, the configurations files are instantiated by replacing 
 | MQTT_USERNAME        | MQTT broker account user name                                                 | No       | ""             |
 | MQTT_PASSWORD        | MQTT broker account password                                                  | No       | ""             |
 
+It is however not mandatory to use these variables; you are free to rename them, or to not use them, as long as you adapt the configuration files accordingly.
+
+If you use containers, environment variables are often the easiest way to provide secrets to the application.
 You can setup them directly in a docker-compose.yaml file (environment section) or from a Docker command line (-e option).
 
 ### Expected behaviour
 
 The following entities will be created in HA (using grdf.devices[].name and homeassistant.entities configuration):
+
 - sensor.{grdf.devices[].name}_card: This entity is fully compatible with [lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card). It has to be choosen in the card "Entity" configuration property.
 - sensor.{grdf.devices[].name}_energy: Total energy consumption in kWh.
 - sensor.{grdf.devices[].name}_volume: Total volume consumption in m³.

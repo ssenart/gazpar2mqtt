@@ -1,6 +1,6 @@
 logging:
-  file: log/gazpar2mqtt.log
-  console: true  
+  file: log/gazpar2mqtt.log # Path to the log file. If not provided, logging to file is disabled, and logging to console will be enabled.
+  console: true
   level: debug
   format: '%(asctime)s %(levelname)s [%(name)s] %(message)s'
 
@@ -35,7 +35,7 @@ homeassistant:
       json_attributes_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
       value_template: "{{ value_json.energy }}"
 
-    energy: 
+    energy:
       device_class: energy
       enabled_by_default: true
       icon: mdi:fire
@@ -44,7 +44,7 @@ homeassistant:
       unit_of_measurement: kWh
       value_template: "{{ value_json.energy }}"
 
-    volume: 
+    volume:
       device_class: gas
       enabled_by_default: true
       icon: mdi:fire
@@ -52,8 +52,8 @@ homeassistant:
       state_topic: "{{ mqtt_base_topic }}/{{ device_name }}"
       unit_of_measurement: "m³"
       value_template: "{{ value_json.volume }}"
-    
-    temperature: 
+
+    temperature:
       device_class: temperature
       enabled_by_default: true
       icon: mdi:thermometer
