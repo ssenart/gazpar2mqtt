@@ -79,6 +79,8 @@ The following steps show you how to build the Docker image based on the local so
 $ cd /path/to/my_install_folder/
 
 $ git clone https://github.com/ssenart/gazpar2mqtt.git
+
+$ cd gazpar2mqtt
 ```
 
 2. Edit the docker-compose.yaml file by setting the environment variables corresponding to your GrDF account and MQTT setup:
@@ -386,3 +388,4 @@ Since it relies on MQTT, it can be used with any other Home Controllers that wor
 A compatible Home Assistant Lovelace Card is available [here](https://github.com/ssenart/lovelace-gazpar-card)
 
 An alternative is using Home Assistant integration custom component available [here](https://github.com/ssenart/home-assistant-gazpar).
+
