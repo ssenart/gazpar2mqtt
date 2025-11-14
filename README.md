@@ -81,7 +81,7 @@ $ cd /path/to/my_install_folder/
 $ git clone https://github.com/ssenart/gazpar2mqtt.git
 ```
 
-2. Edit the docker-compose.yaml file by setting the environment variables corresponding to your GrDF account and MQTT setup:
+2. If you want, edit the docker-compose.yaml file by setting the environment variables corresponding to your GrDF account and MQTT setup:
 
 ```yaml
 environment:
@@ -94,7 +94,9 @@ environment:
 3. Build the image:
 
 ```sh
-$ docker compose build
+$ docker compose -f docker/docker-compose.yaml --project-directory . build
+# or, force a full rebuild without cache:
+$ docker image build . -f docker/Dockerfile --no-cache --progress=plain
 ```
 
 4. Run the container:
