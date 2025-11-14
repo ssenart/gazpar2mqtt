@@ -71,7 +71,7 @@ $ pip install gazpar2mqtt
 
 ### 4. Using Dockerfile
 
-The following steps permit to build the Docker image based on the local source files.
+The following steps show you how to build the Docker image based on the local source files.
 
 1. Clone the repo locally:
 
@@ -81,7 +81,7 @@ $ cd /path/to/my_install_folder/
 $ git clone https://github.com/ssenart/gazpar2mqtt.git
 ```
 
-2. If you want, edit the docker-compose.yaml file by setting the environment variables corresponding to your GrDF account and MQTT setup:
+2. Edit the docker-compose.yaml file by setting the environment variables corresponding to your GrDF account and MQTT setup:
 
 ```yaml
 environment:
@@ -94,16 +94,22 @@ environment:
 3. Build the image:
 
 ```sh
-$ docker compose -f docker/docker-compose.yaml --project-directory . build
-# or, force a full rebuild without cache:
-$ docker image build . -f docker/Dockerfile --no-cache --progress=plain
+$ cp docker/docker-compose.yaml .
+$ docker compose build
+# alternatively you can also do this to force a full rebuild without cache, into a different tag, for beta testing.
+# Be sure to adapt the docker-compose.yaml accordingly.
+$ docker image build . -f docker/Dockerfile --no-cache --progress=plain --tag ssenart/gazpar2mqtt:beta
 ```
 
 4. Run the container:
 
+(provided you have copied the docker-compose.yaml file to the current folder, as was done above)
+
 ```sh
 $ docker compose up -d
 ```
+
+This will run the container in detached mode, and use the local `./config` and `./log` folders for configuration and logging.
 
 ### 5. Using source files
 
