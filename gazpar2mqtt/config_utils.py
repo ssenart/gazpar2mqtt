@@ -18,8 +18,10 @@ class ConfigLoader:
         else:
             raise FileNotFoundError(f"Secrets file '{self.secrets_file}' not found.")
 
-    def load_config(self, env_defaults: dict = {}):
+    def load_config(self, env_defaults: dict = None):
         """Load the main configuration file and resolve secrets."""
+        if env_defaults is None:
+            env_defaults = {}
         if os.path.exists(self.config_file):
             with open(self.config_file, "r", encoding="utf-8") as file:
                 self.config = yaml.safe_load(file)
@@ -40,7 +42,7 @@ class ConfigLoader:
                 return self.secrets[secret_key]
             raise KeyError(f"Secret key '{secret_key}' not found in secrets file.")
         return data
-    
+
     def _resolve_env_vars(self, data, env_defaults: dict):
         """Recursively resolve `${ENV_VAR}` in the configuration."""
         if isinstance(data, dict):
@@ -52,16 +54,16 @@ class ConfigLoader:
             start = data.find("${")
             end = data.find("}", start)
             while start != -1 and end != -1:
-                env_var = data[start + 2:end]
+                env_var = data[start + 2 : end]
                 env_value = os.getenv(env_var, env_defaults.get(env_var, None))
                 # "" is a valid value, None means not found
                 if env_value is None:
                     raise KeyError(f"Environment variable '{env_var}' not found.")
-                
+
                 if not isinstance(env_value, str):
                     # env variables are strings, but just in case you provided something else in env_defaults...
                     env_value = str(env_value)
-                data = data[:start] + env_value + data[end + 1:]
+                data = data[:start] + env_value + data[end + 1 :]
                 start = data.find("${")
                 end = data.find("}", start)
         return data
@@ -81,21 +83,22 @@ class ConfigLoader:
                 if len(value) == 0 or value.lower() == "none" or value.lower() == "null":
                     return default
                 return value
-            else:
-                return value
+            return value
         except (KeyError, TypeError):
             return default
 
     def dumps(self) -> str:
-        """ Dump the configuration as a YAML string, sanitizing sensitive information."""
-    
+        """Dump the configuration as a YAML string, sanitizing sensitive information."""
+
         def sanitize(data, key: str | None = None):
-            """ Recursively sanitize sensitive information in the configuration data. """
+            """Recursively sanitize sensitive information in the configuration data."""
             if isinstance(data, dict):
                 return {key: sanitize(value, key) for key, value in data.items()}
             if isinstance(data, list):
                 return [sanitize(item) for item in data]
-            if key is not None and (("password" in key.lower()) or ("token" in key.lower()) or ("secret" in key.lower())):
+            if key is not None and (
+                ("password" in key.lower()) or ("token" in key.lower()) or ("secret" in key.lower())
+            ):
                 return "******"
             return data
 

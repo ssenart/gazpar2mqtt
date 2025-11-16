@@ -42,22 +42,22 @@ def main():
             "GRDF_SCAN_INTERVAL": "480",  # 8 hours
             "GRDF_LAST_DAYS": "1095",  # 3 years
             "MQTT_USERNAME": "",
-            "MQTT_PASSWORD": ""
+            "MQTT_PASSWORD": "",
         }
-        
+
         # Default configuration values for logging
         config_defaults = {
             "logging.level": "INFO",
             "logging.console": True,
             "logging.file": None,
-            "logging.format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s"            
+            "logging.format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         }
 
         # Load configuration files
         config = config_utils.ConfigLoader(args.config, args.secrets)
         config.load_secrets()
         config.load_config(env_defaults)
-        
+
         print("Starting Gazpar2MQTT...")
         print(config.dumps())
 
@@ -70,7 +70,7 @@ def main():
         logging_level = config.get("logging.level", config_defaults["logging.level"])
         logging_format = config.get("logging.format", config_defaults["logging.format"])
 
-        # Convert logging level from string to integer            
+        # Convert logging level from string to integer
         if logging_level.upper() == "DEBUG":
             level = logging.DEBUG
         elif logging_level.upper() == "INFO":
