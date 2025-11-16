@@ -1,4 +1,5 @@
 import os
+from typing import Optional
 
 import yaml
 
@@ -18,7 +19,7 @@ class ConfigLoader:
         else:
             raise FileNotFoundError(f"Secrets file '{self.secrets_file}' not found.")
 
-    def load_config(self, env_defaults: dict = None):
+    def load_config(self, env_defaults: Optional[dict] = None):
         """Load the main configuration file and resolve secrets."""
         if env_defaults is None:
             env_defaults = {}
