@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.4] - 2025-11-16
+
+### Fixed
+
+[#28](https://github.com/ssenart/gazpar2mqtt/issues/28): Console logging, Env variable substitution, documentation clarifications by [hb020](https://github.com/hb020)
+* complete env vars inside Python
+* better docker build statements
+* improve readme
+* small readme tweak
+
 ## [0.2.3] - 2025-11-05
 
 ### Fixed

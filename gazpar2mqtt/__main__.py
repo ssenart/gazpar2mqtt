@@ -35,21 +35,42 @@ def main():
     args = parser.parse_args()
 
     try:
+
+        # Some defaults to standard environment variables
+        env_defaults = {
+            "MQTT_PORT": "1883",
+            "GRDF_SCAN_INTERVAL": "480",  # 8 hours
+            "GRDF_LAST_DAYS": "1095",  # 3 years
+            "MQTT_USERNAME": "",
+            "MQTT_PASSWORD": "",
+        }
+
+        # Default configuration values for logging
+        config_defaults = {
+            "logging.level": "INFO",
+            "logging.console": True,
+            "logging.file": None,
+            "logging.format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        }
+
         # Load configuration files
         config = config_utils.ConfigLoader(args.config, args.secrets)
         config.load_secrets()
-        config.load_config()
+        config.load_config(env_defaults)
+
+        print("Starting Gazpar2MQTT...")
+        print(config.dumps())
 
         print(f"Gazpar2MQTT version: {__version__}")
         print(f"Running on Python version: {sys.version}")
 
         # Set up logging
-        logging_file = config.get("logging.file")
-        logging_console = bool(config.get("logging.console"))
-        logging_level = config.get("logging.level")
-        logging_format = config.get("logging.format")
+        logging_file = config.get("logging.file", config_defaults["logging.file"])
+        logging_console = bool(config.get("logging.console", config_defaults["logging.console"]))
+        logging_level = config.get("logging.level", config_defaults["logging.level"])
+        logging_format = config.get("logging.format", config_defaults["logging.format"])
 
-        # Convert logging level to integer
+        # Convert logging level from string to integer
         if logging_level.upper() == "DEBUG":
             level = logging.DEBUG
         elif logging_level.upper() == "INFO":
@@ -63,10 +84,12 @@ def main():
         else:
             level = logging.INFO
 
+        # logging_file may be empty or None
         logging.basicConfig(filename=logging_file, level=level, format=logging_format)
 
-        if logging_console:
-            # Add a console handler manually
+        if logging_file and logging_console:
+            # Add a console handler manually, but only if logging to file is also enabled
+            # if logging_file is not set, basicConfig already logs to console
             console_handler = logging.StreamHandler()
             console_handler.setLevel(level)  # Set logging level for the console
             console_handler.setFormatter(logging.Formatter(logging_format))  # Customize console format
