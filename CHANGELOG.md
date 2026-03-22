@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.5] - 2026-03-22
+
+### Fixed
+
+[#31](https://github.com/ssenart/gazpar2mqtt/issues/31): Replace deprecated `object_id` with `default_entity_id` in MQTT discovery payload to fix Home Assistant deprecation warning (will stop working in HA Core 2026.4).
+
 ## [0.2.4] - 2025-11-16
 
 ### Fixed

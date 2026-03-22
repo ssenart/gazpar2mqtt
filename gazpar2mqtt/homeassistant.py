@@ -86,7 +86,7 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
                 payload = ha_payload.copy()
 
                 logging.info(f"Publishing Home Assistant entity '{ha_entity}' of device '{ha_device_name}'")
-                payload["object_id"] = f"{ha_device_name}_{ha_entity}"
+                payload["default_entity_id"] = f"sensor.{ha_device_name}_{ha_entity}"
                 if payload.get("state_topic") is not None:
                     template = Template(payload["state_topic"])
                     payload["state_topic"] = template.render(
