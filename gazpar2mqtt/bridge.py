@@ -1,6 +1,7 @@
 import json
 import logging
 import signal
+import threading
 import time
 
 import paho.mqtt.client as mqtt
@@ -8,6 +9,9 @@ import paho.mqtt.client as mqtt
 from gazpar2mqtt import config_utils
 from gazpar2mqtt.gazpar import Gazpar
 from gazpar2mqtt.homeassistant import HomeAssistant
+
+# Maximum time (in seconds) to wait for the MQTT broker to answer the connection request
+MQTT_CONNECT_TIMEOUT = 10
 
 
 # ----------------------------------
@@ -32,6 +36,10 @@ class Bridge:
         self._mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1)
         self._mqtt_client.username_pw_set(mqtt_username, mqtt_password)
 
+        # Result of the connection request, set by on_connect once the broker has answered
+        self._mqtt_connected = threading.Event()
+        self._mqtt_connect_rc = None
+
         # Set up MQTT callbacks
         self._mqtt_client.on_connect = self.on_connect
         self._mqtt_client.on_disconnect = self.on_disconnect
@@ -53,7 +61,13 @@ class Bridge:
 
     # ----------------------------------
     def on_connect(self, client, userdata, flags, rc):  # pylint: disable=unused-argument
-        logging.info(f"Connected to MQTT broker with result code {rc}")
+        self._mqtt_connect_rc = rc
+        self._mqtt_connected.set()
+
+        if rc == 0:
+            logging.info("Connected to MQTT broker.")
+        else:
+            logging.error(f"MQTT broker refused the connection: {mqtt.connack_string(rc)} (result code {rc})")
 
     # ----------------------------------
     def on_disconnect(self, client, userdata, rc):  # pylint: disable=unused-argument
@@ -73,7 +87,17 @@ class Bridge:
         logging.info("Connecting to MQTT broker...")
         self._mqtt_client.connect(self._mqtt_broker, self._mqtt_port, self._mqtt_keepalive)
         self._mqtt_client.loop_start()
-        logging.info("Connected to MQTT broker.")
+
+        # Do not publish anything until the broker has accepted the connection
+        if not self._mqtt_connected.wait(MQTT_CONNECT_TIMEOUT):
+            self.dispose()
+            raise TimeoutError(f"No answer from MQTT broker after {MQTT_CONNECT_TIMEOUT} seconds.")
+        if self._mqtt_connect_rc != 0:
+            self.dispose()
+            raise ConnectionRefusedError(
+                f"MQTT broker refused the connection: {mqtt.connack_string(self._mqtt_connect_rc)} "
+                f"(result code {self._mqtt_connect_rc}). Check mqtt.username and mqtt.password."
+            )
 
         # Set running flag
         self._running = True
@@ -131,10 +155,10 @@ class Bridge:
         for gazpar in self._gazpar:
             gazpar.dispose()
 
-        # Stop the network loop
+        # Disconnect first: loop_stop() waits for the network loop, which only exits once the connection is closed
         logging.info("Disconnecting from MQTT broker...")
-        self._mqtt_client.loop_stop()
         self._mqtt_client.disconnect()
+        self._mqtt_client.loop_stop()
         logging.info("Disconnected from MQTT broker.")
 
     # ----------------------------------

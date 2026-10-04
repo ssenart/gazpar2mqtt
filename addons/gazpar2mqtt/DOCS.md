@@ -40,3 +40,5 @@ mqtt:
 | mqtt.password            | MQTT broker password                                                                                                     | No       | ""               |
 | mqtt.keepalive           | MQTT broker keepalive                                                                                                    | No       | 60               |
 | mqtt.base_topic          | MQTT base topic                                                                                                          | No       | "gazpar2mqtt"    |
+
+If your MQTT broker requires authentication (for example the Mosquitto add-on with a user defined), set `mqtt.username` and `mqtt.password`. Otherwise the broker refuses the connection (`not authorised`, result code 5) and the add-on stops without creating any entity.

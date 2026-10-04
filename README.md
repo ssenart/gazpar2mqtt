@@ -307,6 +307,12 @@ In this situation, the most valuable tool for troubleshooting what is happening 
 
 Take a look at it, try to find a clue that might help solve the problem. Sorry, the log file can sometimes appear cryptic.
 
+A common cause is an MQTT broker that refuses the connection. The application then stops with the following error, and no entities are created in HA:
+```log
+ERROR [root] MQTT broker refused the connection: Connection Refused: not authorised. (result code 5)
+```
+This means the broker rejected the credentials. Check `mqtt.username` and `mqtt.password` (or `MQTT_USERNAME` and `MQTT_PASSWORD`). Leaving them empty only works if your broker accepts anonymous connections. For example, the Mosquitto add-on requires a user to be defined.
+
 If your configuration is correct, you may have spotted a bug.
 
 In this case, capture a Github issue [here](https://github.com/ssenart/gazpar2mqtt/issues) with the following information:
