@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6a1] - 2026-10-04
+
 ### Changed
 
 - Upgraded the PyGazpar library to `1.4.0a3`. It brings pydantic as a new dependency.
@@ -83,3 +85,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2024-12-08
 
 First version of the project.
+
+[Unreleased]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a1...HEAD
+[0.2.6a1]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.5...0.2.6a1
