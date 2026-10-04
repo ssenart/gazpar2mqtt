@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Upgraded the PyGazpar library to `1.4.0a3`. It brings pydantic as a new dependency.
+
 ### Fixed
 
 [#36](https://github.com/ssenart/gazpar2mqtt/issues/36): Wait for the MQTT broker to accept the connection before publishing. A refused connection (e.g. missing or wrong `mqtt.username`/`mqtt.password`) now stops the application with a clear error instead of logging success and silently dropping all data. Also fixed a shutdown hang when the connection is still open.
