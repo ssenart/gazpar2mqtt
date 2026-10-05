@@ -12,7 +12,6 @@ from gazpar2mqtt import __version__
 
 # ----------------------------------
 class Gazpar:
-
     # ----------------------------------
     def __init__(self, config: dict[str, Any], mqqtt_client: mqtt.Client, mqtt_base_topic: str):
         self._config = config
@@ -45,7 +44,7 @@ class Gazpar:
         available = True
         try:
             data = self._read_pygazpar_data(grdf_username, grdf_password, grdf_pce_identifier, grdf_last_days)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:  # noqa: BLE001
             logging.warning(f"Error while fetching data from GrDF: {traceback.format_exc()}")
             data = {}
             available = False
@@ -208,11 +207,9 @@ class Gazpar:
 
         index = 0
         for reading in data:
-
             weekDate = Gazpar._getIsoCalendar(reading["time_period"])
 
             if index < Gazpar.MAX_WEEKLY_READINGS / 2:
-
                 weekDate = (weekDate.weekday, weekDate.week, weekDate.year - 1)
 
                 previousYearWeekDate.append(weekDate)

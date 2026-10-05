@@ -16,7 +16,6 @@ MQTT_CONNECT_TIMEOUT = 10
 
 # ----------------------------------
 class Bridge:
-
     # ----------------------------------
     def __init__(self, config: config_utils.ConfigLoader):
 
@@ -60,7 +59,7 @@ class Bridge:
         self._running = False
 
     # ----------------------------------
-    def on_connect(self, client, userdata, flags, rc):  # pylint: disable=unused-argument
+    def on_connect(self, client, userdata, flags, rc):  # noqa: ARG002
         self._mqtt_connect_rc = rc
         self._mqtt_connected.set()
 
@@ -70,12 +69,12 @@ class Bridge:
             logging.error(f"MQTT broker refused the connection: {mqtt.connack_string(rc)} (result code {rc})")
 
     # ----------------------------------
-    def on_disconnect(self, client, userdata, rc):  # pylint: disable=unused-argument
+    def on_disconnect(self, client, userdata, rc):  # noqa: ARG002
         logging.info("Disconnected from broker")
 
     # ----------------------------------
     # Graceful shutdown function
-    def handle_signal(self, signum, frame):  # pylint: disable=unused-argument
+    def handle_signal(self, signum, frame):  # noqa: ARG002
         print(f"Signal {signum} received. Shutting down gracefully...")
         logging.info(f"Signal {signum} received. Shutting down gracefully...")
         self._running = False
