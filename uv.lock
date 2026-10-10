@@ -294,7 +294,7 @@ wheels = [
 
 [[package]]
 name = "gazpar2mqtt"
-version = "0.2.6a1"
+version = "0.2.6a2"
 source = { editable = "." }
 dependencies = [
     { name = "jinja2" },
