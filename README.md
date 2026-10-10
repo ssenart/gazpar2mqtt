@@ -115,7 +115,7 @@ This will run the container in detached mode, and use the local `./config` and `
 
 ### 5. Using source files
 
-The project requires [Poetry](https://python-poetry.org/) tool for dependency and package management.
+The project requires [uv](https://docs.astral.sh/uv/) tool for dependency and package management.
 
 ```sh
 $ cd /path/to/my_install_folder/
@@ -124,11 +124,13 @@ $ git clone https://github.com/ssenart/gazpar2mqtt.git
 
 $ cd gazpar2mqtt
 
-$ poetry install
+$ uv sync
 
-$ poetry shell
+$ source .venv/bin/activate
 
 ```
+
+`uv sync` creates the `.venv` virtual environment from the versions locked in `uv.lock`. Activate it as above (`.venv\Scripts\activate` on Windows), or prefix the commands with `uv run`.
 
 ## Usage
 

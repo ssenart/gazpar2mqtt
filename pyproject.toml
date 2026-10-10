@@ -2,7 +2,8 @@
 name = "gazpar2mqtt"
 version = "0.2.6a1"
 description = "Gateway that read GrDF meter data and publish them on MQTT queue"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
@@ -21,15 +22,25 @@ dependencies = [
     "jinja2>=3.1.5"
 ]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^9.0.3"
-pytest-asyncio = "^1.4.0"
-mypy = "^2.4.0"
-ruff = "^0.16.10"
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3,<10.0.0",
+    "pytest-asyncio>=1.4.0,<2.0.0",
+    "mypy>=2.4.0,<3.0.0",
+    "ruff>=0.16.10,<0.17.0",
+    "types-pyyaml>=6.0.12,<7.0.0",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
+
+[tool.uv]
+required-version = ">=0.13.0"
+
+[tool.uv.build-backend]
+module-name = "gazpar2mqtt"
+module-root = ""
 
 [tool.mypy]
 exclude = [ ".venv" ]
