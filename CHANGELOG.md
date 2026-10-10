@@ -7,10 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- A Development section in the README explains how to set up the environment with uv, check the code, run the tests (including the integration tests, which need a secrets file and an MQTT broker), manage the dependencies, build, and release.
+
 ### Changed
 
+- Upgraded the PyGazpar library to `1.4.0a5`. It no longer depends on `pandas`, so `pandas` and the packages it needed are no longer installed.
 - Development tooling: [uv](https://docs.astral.sh/uv/) replaces Poetry. The package is built with the `uv_build` backend, the development tools are a `dev` dependency group in `pyproject.toml`, and the locked versions are in `uv.lock` (`poetry.lock` is removed). To work on the project, run `uv sync` instead of `poetry install`. The CI and release workflows and the Docker image use uv. The application, its configuration and its command line are unchanged.
 - `types-pyyaml` is a development dependency, so that mypy needs no `--install-types`.
+- Git ignores every secrets file (`secrets.yaml`, `secrets.*.yaml`, `secrets.env`, `*.secrets`) in any folder, instead of three fixed paths. The `secrets.template.yaml` templates are still tracked.
 - Upgraded the PyGazpar library to `1.4.0a4`.
 - Development dependencies: pytest `^9.0.3` and pytest-asyncio `^1.4.0`.
 - Development tooling: ruff (lint and format) and mypy replace flake8, isort, black and pylint. Ruff and mypy are updated to their latest stable versions, and the CI lint and test steps are inlined in the workflow.

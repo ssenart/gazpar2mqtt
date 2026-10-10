@@ -343,6 +343,136 @@ The normal last lines of the log should be:
 2025-02-17 10:01:55,821 INFO [root] Waiting 480 minutes before next scan...
 ```
 
+## Development
+
+### Prerequisites
+
+- Python 3.10 or higher (the CI tests 3.10 to 3.13).
+- [uv](https://docs.astral.sh/uv/) 0.13 or higher.
+- Git.
+- Docker, only for the integration tests (they need an MQTT broker) and to build the image.
+
+### Get the sources and set up the environment
+
+```sh
+$ git clone https://github.com/ssenart/gazpar2mqtt.git
+
+$ cd gazpar2mqtt
+
+$ uv sync
+```
+
+`uv sync` creates the `.venv` virtual environment with the application and the development tools (pytest, ruff, mypy), from the versions locked in `uv.lock`. Prefix the commands below with `uv run`, or activate the environment first (`source .venv/bin/activate`, or `.venv\Scripts\activate` on Windows).
+
+To run the application from the sources, copy the templates in `config/`, fill in your GrDF and MQTT settings, then start it:
+
+```sh
+$ cp config/secrets.template.yaml config/secrets.yaml
+
+$ uv run python -m gazpar2mqtt --config config/configuration.yaml --secrets config/secrets.yaml
+```
+
+### Project layout
+
+| Path | Content |
+|---|---|
+| `gazpar2mqtt/` | The application package. |
+| `tests/` | The tests, with their configuration in `tests/config/` and a Mosquitto configuration in `tests/containers/`. |
+| `config/` | The configuration and secrets templates used at run time. |
+| `docker/` | The Dockerfile, the entrypoint and the `docker-compose.yaml` sample. |
+| `addons/` | The Home Assistant add-on. |
+| `pyproject.toml`, `uv.lock` | The project metadata and the locked dependency versions. Commit `uv.lock` with every dependency change. |
+
+### Check the code
+
+```sh
+$ uv run ruff format .          # format the code (the CI runs: ruff format --check .)
+
+$ uv run ruff check .           # lint
+
+$ uv run mypy .                 # check the types
+```
+
+### Run the tests
+
+Four tests need no account and no broker. The four others are integration tests: they read your real GrDF data and publish it to a real MQTT broker.
+
+| Test | Needs |
+|---|---|
+| `test_version`, `test_generate_objectid`, `test_run_succeeds_when_broker_accepts_connection`, `test_run_fails_when_broker_refuses_connection` | Nothing. |
+| `test_run` (`test_bridge.py`), `test_publish` (`test_gazpar.py` and `test_homeassistant.py`), `test_main` | A secrets file with your GrDF account, and an MQTT broker on `127.0.0.1:1883`. |
+
+Without a secrets file, the integration tests fail with `Secrets file 'tests/config/secrets.yaml' not found`. To run only the tests that need nothing:
+
+```sh
+$ uv run pytest -k "test_version or test_generate_objectid or broker"
+```
+
+To run all the tests, as the CI does:
+
+1. Create the secrets file from the template. Either copy `tests/config/secrets.template.yaml` to `tests/config/secrets.yaml` and edit it, or fill it in from environment variables (`envsubst` comes with the `gettext` package):
+
+   ```sh
+   $ export GRDF_USERNAME='your login' GRDF_PASSWORD='your password' GRDF_PCE_IDENTIFIER='12345678901234'
+
+   $ envsubst < tests/config/secrets.template.yaml > tests/config/secrets.yaml
+   ```
+
+2. Start a Mosquitto broker with the test configuration:
+
+   ```sh
+   $ docker run -d --name mosquitto-gazpar-test -p 127.0.0.1:1883:1883 \
+       -v "$PWD/tests/containers/config:/mosquitto/config:ro" \
+       --tmpfs /mosquitto/data --tmpfs /mosquitto/log eclipse-mosquitto:latest
+   ```
+
+   The CI uses `tests/containers/docker-compose.yaml`. Locally, prefer `docker run` as above: the compose file mounts `tests/containers/data` and `tests/containers/log`, where the container creates files owned by root inside your working copy.
+
+3. Run the tests, then stop the broker:
+
+   ```sh
+   $ uv run pytest
+
+   $ docker rm -f mosquitto-gazpar-test
+   ```
+
+The test log is written to `log/pytest.log`.
+
+**The secrets file holds your real credentials and must never be committed.** Git ignores every `secrets.yaml`, `secrets.*.yaml`, `secrets.env` and `*.secrets` file, whatever its folder; only the `secrets.template.yaml` templates are tracked, and they contain placeholders only. Keep your credentials out of the templates, and check `git status` before you commit.
+
+### Manage the dependencies
+
+```sh
+$ uv add paho-mqtt              # add a dependency of the application
+
+$ uv add --group dev pytest-cov # add a development tool
+
+$ uv lock --upgrade-package pyyaml  # upgrade one locked package
+
+$ uv sync --locked              # install exactly what uv.lock says (the CI does this)
+```
+
+### Build
+
+```sh
+$ uv build                      # the wheel and the sdist, in dist/
+
+$ docker build -f docker/Dockerfile -t ssenart/gazpar2mqtt:dev .
+```
+
+### Continuous integration and releases
+
+The CI workflow runs on every push: it checks the formatting, lints, checks the types, and runs the tests on Python 3.10 to 3.13.
+
+Releases are made with the **Create Release** workflow (GitHub Actions, run manually). It takes the version to release, and the branch it runs on decides which kind of version is accepted: an alpha such as `0.5.1a4` on `develop`, a beta or a release candidate such as `0.5.1b1` or `0.5.1rc1` on a `release/0.5.1` branch, and a final version such as `0.5.1` on `main`. All of them are published to PyPI; a run from a `feature/*` branch publishes to TestPyPI instead. Use its dry-run option first. The workflow:
+
+- checks the version against the branch, requires it to be greater than every existing tag, and checks the CI status of the commit;
+- bumps the version in `pyproject.toml`, `uv.lock` and the add-on files, so do not bump it by hand;
+- turns the `[Unreleased]` section of `CHANGELOG.md` into the released version, and uses it as the release notes;
+- builds the package, publishes it to PyPI (or TestPyPI), publishes the Docker image (the `latest` tag only for a final version), then commits the bump, tags it and creates the GitHub release.
+
+Add an entry under `[Unreleased]` in `CHANGELOG.md` for every change visible to the users: the workflow refuses to release when that section is empty. The manual way to publish a Docker image is described in the next section.
+
 ## Publish a new image on Docker Hub
 
 1. List all local images
@@ -382,6 +512,8 @@ All the gazpar2mqtt images are available [here](https://hub.docker.com/repositor
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
 
 Please make sure to update tests as appropriate.
+
+See the [Development](#development) section to set up the environment and to run the checks and the tests.
 
 ## License
 

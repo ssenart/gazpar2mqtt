@@ -161,9 +161,12 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 
-# Secrets configuration file
-config/secrets.yaml
-tests/config/secrets.yaml
-docker/secrets.env
+# Secrets: real credentials must never be committed, whatever the folder.
+# Only the templates (secrets.template.yaml) are tracked.
+secrets.yaml
+secrets.*.yaml
+secrets.env
+*.secrets
+!secrets.template.yaml
 docker/config
 docker/log
