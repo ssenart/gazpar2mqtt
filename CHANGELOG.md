@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Upgraded the PyGazpar library to `1.4.0`. Requires `pygazpar>=1.4.0`.
+- Python 3.14 is tested in CI and listed as a supported version.
 
 ## [0.2.6a3] - 2026-10-24
 

@@ -347,7 +347,7 @@ The normal last lines of the log should be:
 
 ### Prerequisites
 
-- Python 3.10 or higher (the CI tests 3.10 to 3.13).
+- Python 3.10 or higher (the CI tests 3.10 to 3.14).
 - [uv](https://docs.astral.sh/uv/) 0.13 or higher.
 - Git.
 - Docker, only for the integration tests (they need an MQTT broker) and to build the image.
@@ -462,7 +462,7 @@ $ docker build -f docker/Dockerfile -t ssenart/gazpar2mqtt:dev .
 
 ### Continuous integration and releases
 
-The CI workflow runs on every push: it checks the formatting, lints, checks the types, and runs the tests on Python 3.10 to 3.13.
+The CI workflow runs on every push: it checks the formatting, lints, checks the types, and runs the tests on Python 3.10 to 3.14.
 
 Releases are made with the **Create Release** workflow (GitHub Actions, run manually). It takes the version to release, and the branch it runs on decides which kind of version is accepted: an alpha such as `0.5.1a4` on `develop`, a beta or a release candidate such as `0.5.1b1` or `0.5.1rc1` on a `release/0.5.1` branch, and a final version such as `0.5.1` on `main`. All of them are published to PyPI; a run from a `feature/*` branch publishes to TestPyPI instead. Use its dry-run option first. The workflow:
 
