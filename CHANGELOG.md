@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-11-11
+
 ### Changed
 
 - Upgraded the PyGazpar library to `1.4.0`. Requires `pygazpar>=1.4.0`.
@@ -120,7 +122,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 First version of the project.
 
-[Unreleased]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a3...HEAD
+[Unreleased]: https://github.com/ssenart/gazpar2mqtt/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a3...0.3.0
 [0.2.6a3]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a2...0.2.6a3
 [0.2.6a2]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a1...0.2.6a2
 [0.2.6a1]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.5...0.2.6a1
