@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Upgraded the PyGazpar library to `1.4.0`. Requires `pygazpar>=1.4.0`.
+- The MQTT payload of each device now carries the rows of the `daily`, `weekly`, `monthly` and `yearly` arrays with every key present: rows gain `frequency`, `start_date` and `end_date`, and a value the source does not give is `null`. Existing keys are unchanged, so consumers that read them keep working.
+- Weekly values change around the new year: a week is now a calendar week, so the week of 30 December to 5 January is its own week instead of being merged into the following one.
+- Informative days without data are rebuilt from the meter indexes, so some daily values can differ from previous releases.
 - Python 3.14 is tested in CI and listed as a supported version.
 
 ## [0.2.6a3] - 2026-10-24
