@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+- Upgraded the locked `certifi` certificate bundle to `2026.10.23`, which removes the emSign root CA certificates with compromised intermediate CA keys (GHSA-6q48-6c7w-9gw2).
+
 ## [0.3.0] - 2026-11-11
 
 ### Changed
