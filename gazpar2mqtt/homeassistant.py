@@ -41,8 +41,7 @@ attribution = "Data provided by GrDF"
 
 
 # ----------------------------------
-class HomeAssistant:  # pylint: disable=too-few-public-methods
-
+class HomeAssistant:
     # ----------------------------------
     def __init__(
         self,
@@ -82,7 +81,6 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
             ha_payloads = self._config.get("homeassistant.entities")
 
             for ha_entity, ha_payload in ha_payloads.items():
-
                 payload = ha_payload.copy()
 
                 logging.info(f"Publishing Home Assistant entity '{ha_entity}' of device '{ha_device_name}'")
@@ -121,6 +119,4 @@ class HomeAssistant:  # pylint: disable=too-few-public-methods
         hash_bytes = hashlib.sha256(device_name.encode()).digest()[:8]
 
         # Convert bytes to an integer, then format it as hex with "0x" prefix
-        res = f"0x{int.from_bytes(hash_bytes, 'big'):x}"
-
-        return res
+        return f"0x{int.from_bytes(hash_bytes, 'big'):x}"

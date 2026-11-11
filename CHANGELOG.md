@@ -5,6 +5,52 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Upgraded the PyGazpar library to `1.4.0`. Requires `pygazpar>=1.4.0`.
+- The MQTT payload of each device now carries the rows of the `daily`, `weekly`, `monthly` and `yearly` arrays with every key present: rows gain `frequency`, `start_date` and `end_date`, and a value the source does not give is `null`. Existing keys are unchanged, so consumers that read them keep working.
+- Weekly values change around the new year: a week is now a calendar week, so the week of 30 December to 5 January is its own week instead of being merged into the following one.
+- Informative days without data are rebuilt from the meter indexes, so some daily values can differ from previous releases.
+- Python 3.14 is tested in CI and listed as a supported version.
+
+## [0.2.6a3] - 2026-10-24
+
+### Changed
+
+- Upgraded the PyGazpar library to `1.4.0a7`.
+
+## [0.2.6a2] - 2026-10-10
+
+### Added
+
+- A Development section in the README explains how to set up the environment with uv, check the code, run the tests (including the integration tests, which need a secrets file and an MQTT broker), manage the dependencies, build, and release.
+
+### Changed
+
+- Upgraded the PyGazpar library to `1.4.0a5`. It no longer depends on `pandas`, so `pandas` and the packages it needed are no longer installed.
+- Development tooling: [uv](https://docs.astral.sh/uv/) replaces Poetry. The package is built with the `uv_build` backend, the development tools are a `dev` dependency group in `pyproject.toml`, and the locked versions are in `uv.lock` (`poetry.lock` is removed). To work on the project, run `uv sync` instead of `poetry install`. The CI and release workflows and the Docker image use uv. The application, its configuration and its command line are unchanged.
+- `types-pyyaml` is a development dependency, so that mypy needs no `--install-types`.
+- Git ignores every secrets file (`secrets.yaml`, `secrets.*.yaml`, `secrets.env`, `*.secrets`) in any folder, instead of three fixed paths. The `secrets.template.yaml` templates are still tracked.
+- Upgraded the PyGazpar library to `1.4.0a4`.
+- Development dependencies: pytest `^9.0.3` and pytest-asyncio `^1.4.0`.
+- Development tooling: ruff (lint and format) and mypy replace flake8, isort, black and pylint. Ruff and mypy are updated to their latest stable versions, and the CI lint and test steps are inlined in the workflow.
+
+### Security
+
+- Locked `urllib3` to 2.8.0, `requests` to 2.34.2, `idna` to 3.20 and `Jinja2` to 3.1.6 to fix open Dependabot alerts.
+
+## [0.2.6a1] - 2026-10-04
+
+### Changed
+
+- Upgraded the PyGazpar library to `1.4.0a3`. It brings pydantic as a new dependency.
+
+### Fixed
+
+[#36](https://github.com/ssenart/gazpar2mqtt/issues/36): Wait for the MQTT broker to accept the connection before publishing. A refused connection (e.g. missing or wrong `mqtt.username`/`mqtt.password`) now stops the application with a clear error instead of logging success and silently dropping all data. Also fixed a shutdown hang when the connection is still open.
+
 ## [0.2.5] - 2026-03-22
 
 ### Fixed
@@ -73,3 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.1.0] - 2024-12-08
 
 First version of the project.
+
+[Unreleased]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a3...HEAD
+[0.2.6a3]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a2...0.2.6a3
+[0.2.6a2]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a1...0.2.6a2
+[0.2.6a1]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.5...0.2.6a1

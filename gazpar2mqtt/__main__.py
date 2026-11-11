@@ -35,7 +35,6 @@ def main():
     args = parser.parse_args()
 
     try:
-
         # Some defaults to standard environment variables
         env_defaults = {
             "MQTT_PORT": "1883",
@@ -111,7 +110,7 @@ def main():
 
         return 0
 
-    except BaseException:  # pylint: disable=broad-except
+    except BaseException:  # noqa: BLE001
         errorMessage = f"An error occured while running Gazpar2MQTT: {traceback.format_exc()}"
         Logger.error(errorMessage)
         print(errorMessage)

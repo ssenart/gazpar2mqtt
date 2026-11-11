@@ -1,5 +1,4 @@
 import os
-from typing import Optional
 
 import yaml
 
@@ -14,17 +13,17 @@ class ConfigLoader:
     def load_secrets(self):
         """Load the secrets file."""
         if os.path.exists(self.secrets_file):
-            with open(self.secrets_file, "r", encoding="utf-8") as file:
+            with open(self.secrets_file, encoding="utf-8") as file:
                 self.secrets = yaml.safe_load(file)
         else:
             raise FileNotFoundError(f"Secrets file '{self.secrets_file}' not found.")
 
-    def load_config(self, env_defaults: Optional[dict] = None):
+    def load_config(self, env_defaults: dict | None = None):
         """Load the main configuration file and resolve secrets."""
         if env_defaults is None:
             env_defaults = {}
         if os.path.exists(self.config_file):
-            with open(self.config_file, "r", encoding="utf-8") as file:
+            with open(self.config_file, encoding="utf-8") as file:
                 self.config = yaml.safe_load(file)
             self.config = self._resolve_secrets(self.config)
             self.config = self._resolve_env_vars(self.config, env_defaults)

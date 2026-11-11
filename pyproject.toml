@@ -1,8 +1,9 @@
 [project]
 name = "gazpar2mqtt"
-version = "0.2.5"
+version = "0.2.6a3"
 description = "Gateway that read GrDF meter data and publish them on MQTT queue"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [
@@ -13,50 +14,44 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-    "pygazpar>=1.3.1",
+    "pygazpar>=1.4.0",
     "paho-mqtt>=2.1.0",
     "pyyaml>=6.0.2",
     "jinja2>=3.1.5"
 ]
 
-[tool.poetry.group.dev.dependencies]
-pytest = "^8.3.4"
-pytest-asyncio = "^0.25.0"
-flake8-pyproject = "^1.2.3"
-pylint = "^3.3.4"
-black = "^25.1.0"
-flake8 = "^7.1.1"
-isort = "^6.0.0"
-mypy = "^1.14.1"
-ruff = "^0.9.4"
+[dependency-groups]
+dev = [
+    "pytest>=9.0.3,<10.0.0",
+    "pytest-asyncio>=1.4.0,<2.0.0",
+    "mypy>=2.4.0,<3.0.0",
+    "ruff>=0.16.10,<0.17.0",
+    "types-pyyaml>=6.0.12,<7.0.0",
+]
 
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.13.0,<0.14.0"]
+build-backend = "uv_build"
 
-[tool.pylint.'MESSAGES CONTROL']
-ignore = ".venv"
-max-line-length = 120
-disable = "C,W1203,R0902,R0913,R0914,R0917,R0801"
+[tool.uv]
+required-version = ">=0.13.0"
 
-[tool.black]
-exclude = ".venv"
-line-length = 120
-
-[tool.flake8]
-max-line-length = 120
-extend-ignore = [ "E203", "W503", "E704", "E501" ]
-exclude = [".venv"]
-
-[tool.isort]
-profile = "black"
-skip = ".venv"
+[tool.uv.build-backend]
+module-name = "gazpar2mqtt"
+module-root = ""
 
 [tool.mypy]
 exclude = [ ".venv" ]
 
 [tool.ruff]
-exclude = [ ".venv" ]
+# Markdown is excluded, so ruff does not reformat the code samples in the documentation.
+exclude = [ ".venv", "*.md" ]
 line-length = 120
+
+[tool.ruff.lint]
+# E501 is ignored: ruff format owns the line length, and long strings are left as they are.
+select = ["E", "F", "W", "I", "B", "UP", "ARG", "RET", "BLE"]
+ignore = ["E501"]
