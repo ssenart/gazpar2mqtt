@@ -1,12 +1,50 @@
 # Gazpar2MQTT
 
-Gazpar2MQTT is a gateway that reads data from the GrDF (French gas provider) meter and posts it to a MQTT message broker.
+[![PyPI](https://img.shields.io/pypi/v/gazpar2mqtt)](https://pypi.org/project/gazpar2mqtt/)
+[![Python versions](https://img.shields.io/pypi/pyversions/gazpar2mqtt)](https://pypi.org/project/gazpar2mqtt/)
+[![Docker Pulls](https://img.shields.io/docker/pulls/ssenart/gazpar2mqtt)](https://hub.docker.com/r/ssenart/gazpar2mqtt)
+[![CI](https://github.com/ssenart/gazpar2mqtt/actions/workflows/ci.yaml/badge.svg)](https://github.com/ssenart/gazpar2mqtt/actions/workflows/ci.yaml)
+[![License: MIT](https://img.shields.io/github/license/ssenart/gazpar2mqtt)](LICENSE)
 
-It is compatible with [Lovelace Garpar Card](https://github.com/ssenart/lovelace-gazpar-card) with version >= 1.3.11-alpha.3.
+Gazpar2MQTT is a gateway that reads the data of your GrDF (French gas provider) meter and publishes it to an MQTT message broker. It uses the [PyGazpar](https://github.com/ssenart/pygazpar) library to retrieve the GrDF data.
 
-![Lovelace Garpar Card](images/gazpar-card.png)
+It is compatible with the [Lovelace Gazpar Card](https://github.com/ssenart/lovelace-gazpar-card) version 1.3.11-alpha.3 or later.
 
-Gazpar2MQTT is using [PyGazpar](https://github.com/ssenart/pygazpar) library to retrieve GrDF data.
+![Lovelace Gazpar Card](images/gazpar-card.png)
+
+## Contents
+
+- [Features](#features)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Home Assistant Energy Dashboard integration](#home-assistant-energy-dashboard-integration)
+- [FAQ](#faq)
+- [Troubleshooting](#troubleshooting)
+- [Security](#security)
+- [Limitation](#limitation)
+- [Development](#development)
+- [Publishing a Docker image manually](#publishing-a-docker-image-manually)
+- [Related projects](#related-projects)
+- [Changelog](#changelog)
+- [Contributing](#contributing)
+- [License](#license)
+- [Project status](#project-status)
+
+## Features
+
+- Reads the daily, weekly, monthly and yearly consumption from GrDF through [PyGazpar](https://github.com/ssenart/pygazpar).
+- Publishes one retained JSON document per meter to MQTT (see [MQTT payload](#mqtt-payload)).
+- Publishes Home Assistant MQTT discovery entities for the card, the energy, the volume and the temperature.
+- Publishes an availability topic, set to `offline` when GrDF cannot be reached.
+- Runs as a Home Assistant add-on, as a Docker container, as a Python package or from the source files.
+
+## Requirements
+
+- A GrDF account, and your meter identifier (PCE), which is shown in your GrDF account.
+- An MQTT broker.
+- Python 3.10 to 3.14, only when running the Python package or the source files. The Docker container and the Home Assistant add-on need no Python installation.
+- Home Assistant, only to use the discovery entities.
 
 ## Installation
 
@@ -29,7 +67,7 @@ The following steps permits to run a container from an existing image available 
 ```yaml
 services:
   gazpar2mqtt:
-    image: ssenart/gazpar2mqtt:latest
+    image: ssenart/gazpar2mqtt:0.3.0 # Pin the version you install, so that each upgrade is deliberate
     container_name: gazpar2mqtt
     restart: unless-stopped
     network_mode: bridge
@@ -98,9 +136,9 @@ environment:
 ```sh
 $ cp docker/docker-compose.yaml .
 $ docker compose build
-# alternatively you can also do this to force a full rebuild without cache, into a different tag, for beta testing.
+# Alternatively, force a full rebuild without cache, under another tag, to test a local build.
 # Be sure to adapt the docker-compose.yaml accordingly.
-$ docker image build . -f docker/Dockerfile --no-cache --progress=plain --tag ssenart/gazpar2mqtt:beta
+$ docker image build . -f docker/Dockerfile --no-cache --progress=plain --tag ssenart/gazpar2mqtt:dev
 ```
 
 4. Run the container:
@@ -318,14 +356,6 @@ Make sure the HA Recorder integration is configured correctly to record your rea
 
   No, absolutely not. It was made by reverse engineering GrDF website without any guarantee of long-term operation. Indeed, any modification made to their website risks breaking it.
 
-- *I'm confused. What are the differences between [PyGazpar](https://github.com/ssenart/pygazpar), [home-assistant-gazpar](https://github.com/ssenart/home-assistant-gazpar), [lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card), [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt), [Gazpar2HAWS](https://github.com/ssenart/gazpar2haws) ?*
-
-    - [PyGazpar](https://github.com/ssenart/pygazpar) is the low-level Python library used to query GrDF data. It was written for use by other Python programs.
-    - [home-assistant-gazpar](https://github.com/ssenart/home-assistant-gazpar) is the first program using PyGazpar. This is a Home Assistant integration which makes it possible to provide an energy sensor. Coupled with the Recorder integration, it is capable of building a history (called statistics in HA) and displaying it using the Energy Dashboard. It is also compatible with the [lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card).
-    - [lovelace-gazpar-card](https://github.com/ssenart/lovelace-gazpar-card) is a HA card which nicely displays historical data in the form of tables or bar graphs. It is also compatible with [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt).
-    - [Gazpar2MQTT](https://github.com/ssenart/gazpar2mqtt) offers exactly the same functionality as [home-assistant-gazpar](https://github.com/ssenart/home-assistant-gazpar) but runs outside of HA as a standalone application, in a Docker container or in an HA add-on.
-    - [Gazpar2HAWS](https://github.com/ssenart/gazpar2haws) replaces the use of home-assistant-gazpar/Gazpar2MQTT with the HA Recorder integration to create a data history (for Energy dashboard integration). The disadvantage of the latter solution is the non-alignment of the actual reading date and its publication date. Reading values ​​are made available for 2 to 5 days (and sometimes longer). [Gazpar2HAWS](https://github.com/ssenart/gazpar2haws) timestamps the reading value exactly to the observation dates without any offset. In addition, [Gazpar2HAWS](https://github.com/ssenart/gazpar2haws) is able to reconstruct the complete history of your data up to 3 years in the past, which is very practical in the event of data loss. Finally, it provides ways to calculate and publish energy costs.
-
 - *My PCE ID has a leading zero (e.g. "0123456789") and the application fails with an error indicating that the PCE number is unknown. I can see in the log file that it uses "123456789" without the leading zero. What happened ?*
 
   The cause is in your configuration file (grdf.devices[].pce_identifier) ​​where you configured your PCE identifier and you did not quote it. Your PCE number is then interpreted as a number instead of a string.
@@ -371,6 +401,19 @@ The normal last lines of the log should be:
 2025-02-17 10:01:55,821 INFO [root] Gazpar data published to MQTT.
 2025-02-17 10:01:55,821 INFO [root] Waiting 480 minutes before next scan...
 ```
+
+## Security
+
+- **Secrets.** The GrDF password and the MQTT password are secrets. Provide them through environment variables (Docker), through the add-on options (Home Assistant add-on), or through a secrets file (source files and Python package). Never commit them.
+- **Git.** The repository ignores the `secrets.yaml` and `secrets.*.yaml` files. Only the `secrets.template.yaml` templates, which hold placeholders, are tracked.
+- **Logs.** At startup, the application logs its effective configuration. The values of the keys whose name contains `password`, `secret` or `token` are masked. Review a log before you share it in an issue anyway.
+- **MQTT.** The published document contains your GrDF username and your PCE identifier. Use a broker with authentication (`mqtt.username` and `mqtt.password`), do not expose it to the internet, and restrict who can subscribe to the topics under `mqtt.base_topic` (`gazpar2mqtt` by default).
+
+## Limitation
+
+Gazpar2MQTT depends on PyGazpar, which retrieves the data by reading the GrDF website. A change to that website can stop the data retrieval until PyGazpar is updated.
+
+GrDF also makes the readings available with a delay of 2 to 5 days, or more. The most recent values are therefore not the consumption of the current day.
 
 ## Development
 
@@ -502,39 +545,50 @@ Releases are made with the **Create Release** workflow (GitHub Actions, run manu
 
 Add an entry under `[Unreleased]` in `CHANGELOG.md` for every change visible to the users: the workflow refuses to release when that section is empty. The manual way to publish a Docker image is described in the next section.
 
-## Publish a new image on Docker Hub
+## Publishing a Docker image manually
 
-1. List all local images
+The **Create Release** workflow publishes the Docker image of every release (see [Continuous integration and releases](#continuous-integration-and-releases)). Use the steps below only as a manual fallback.
 
-```sh
-$ docker image ls
-```
-
-2. Build a new local image
+1. Build the image:
 
 ```sh
 $ docker compose build
 ```
 
-3. Tag the new built image with the version number
+2. Tag the image with the version number:
 
 ```sh
-$ docker image tag ssenart/gazpar2mqtt:latest ssenart/gazpar2mqtt:0.1.0
+$ docker image tag ssenart/gazpar2mqtt:latest ssenart/gazpar2mqtt:<version>
 ```
 
-4. Login in Docker Hub
+3. Log in to Docker Hub:
 
 ```sh
 $ docker login
 ```
 
-5. Push all the tagged local images to Docker Hub
+4. Push the tags to publish. Push `latest` only for a final version. Name each tag explicitly: `--all-tags` pushes every local tag of the image.
 
 ```sh
-$ docker push --all-tags ssenart/gazpar2mqtt
+$ docker push ssenart/gazpar2mqtt:<version>
 ```
 
-All the gazpar2mqtt images are available [here](https://hub.docker.com/repository/docker/ssenart/gazpar2mqtt/general).
+The images are available [here](https://hub.docker.com/repository/docker/ssenart/gazpar2mqtt/general).
+
+## Related projects
+
+Gazpar2MQTT offers the same functionality as [home-assistant-gazpar](https://github.com/ssenart/home-assistant-gazpar), but runs outside Home Assistant.
+
+| Project | Role |
+| ------- | ---- |
+| [PyGazpar](https://github.com/ssenart/pygazpar) | Python library that retrieves the GrDF data. |
+| [home-assistant-gazpar](https://github.com/ssenart/home-assistant-gazpar) | Home Assistant integration that provides the energy sensor. It is compatible with the Lovelace Gazpar Card. |
+| [Lovelace Gazpar Card](https://github.com/ssenart/lovelace-gazpar-card) | Lovelace card that displays the history as tables or bar charts. It is compatible with Gazpar2MQTT. |
+| [Gazpar2HAWS](https://github.com/ssenart/gazpar2haws) | Feeds the Home Assistant Energy dashboard from the Recorder. It timestamps each reading on its observation date, reconstructs up to 3 years of history and computes energy costs. |
+
+## Changelog
+
+The changes of each version are listed in [CHANGELOG.md](CHANGELOG.md). Releases are published on the [GitHub releases page](https://github.com/ssenart/gazpar2mqtt/releases).
 
 ## Contributing
 
