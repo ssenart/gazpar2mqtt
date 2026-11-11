@@ -269,6 +269,35 @@ Those 3 entities are visible in the "Developer Tools" (States tab) menu in HA:
 ![alt text](images/sensor_1.png)
 ![alt text](images/sensor_2.png)
 
+### MQTT payload
+
+Each device publishes its data as one JSON document on `{mqtt.base_topic}/{grdf.devices[].name}`, retained. The Home Assistant entities above read their values from it, and the other fields are available to automations and dashboards.
+
+| Field | Content |
+| ----- | ------- |
+| `volume` | Latest meter index, in m³. |
+| `energy` | Energy consumed up to the latest index, in kWh. |
+| `temperature` | Latest local temperature, in °C. |
+| `username`, `pce` | The GrDF account and the meter identifier. |
+| `daily`, `weekly`, `monthly`, `yearly` | The readings of each frequency, most recent first. |
+| `source`, `attribution`, `timestamp` | The application that published the data, the data provider's attribution, and the time of publication. |
+
+Each reading in these arrays has the same keys, and a value the source does not give is `null`:
+
+| Key | Content |
+| --- | ------- |
+| `time_period` | The period label, for example `09/05/2019` for a day. |
+| `frequency` | `daily`, `weekly`, `monthly` or `yearly`. |
+| `start_date`, `end_date` | The first and last day of the period. |
+| `start_index_m3`, `end_index_m3` | The meter indexes at the start and at the end of the period, in m³. |
+| `volume_m3`, `energy_kwh` | The volume and the energy consumed during the period. |
+| `converter_factor_kwh/m3` | The factor that converts volume to energy. |
+| `temperature_degC` | The temperature of the period, in °C. |
+| `type` | `MES` for a measured reading, `Calculé` for a value computed from the meter indexes. |
+| `timestamp` | When PyGazpar read the reading. |
+
+Weekly readings follow the calendar week, so the week that straddles the new year is a week of its own. Some daily values can be computed from the meter indexes when GrDF has no reading for a day, and are then marked `Calculé`.
+
 ## Home Assistant Energy Dashboard integration
 
 ### Gazpar2HAWS
@@ -325,7 +354,7 @@ In this case, capture a Github issue [here](https://github.com/ssenart/gazpar2mq
 
 The first log lines should be similar to:
 ```log
-2025-02-17 02:00:45,617 INFO [__main__] Starting Gazpar2MQTT version 0.2.1
+2025-02-17 02:00:45,617 INFO [__main__] Starting Gazpar2MQTT version 0.3.0
 2025-02-17 02:00:45,619 INFO [__main__] Running on Python version: 3.12.9 (main, Feb  7 2025, 01:03:02) [GCC 12.2.0]
 ```
 
