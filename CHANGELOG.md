@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2026-11-11
+
 ### Security
 
 - Upgraded the locked `certifi` certificate bundle to `2026.10.23`, which removes the emSign root CA certificates with compromised intermediate CA keys (GHSA-6q48-6c7w-9gw2).
@@ -126,7 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 First version of the project.
 
-[Unreleased]: https://github.com/ssenart/gazpar2mqtt/compare/0.3.0...HEAD
+[Unreleased]: https://github.com/ssenart/gazpar2mqtt/compare/0.3.1...HEAD
+[0.3.1]: https://github.com/ssenart/gazpar2mqtt/compare/0.3.0...0.3.1
 [0.3.0]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a3...0.3.0
 [0.2.6a3]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a2...0.2.6a3
 [0.2.6a2]: https://github.com/ssenart/gazpar2mqtt/compare/0.2.6a1...0.2.6a2

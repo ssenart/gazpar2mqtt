@@ -1,6 +1,6 @@
 [project]
 name = "gazpar2mqtt"
-version = "0.3.0"
+version = "0.3.1"
 description = "Gateway that read GrDF meter data and publish them on MQTT queue"
 license = "MIT"
 license-files = ["LICENSE"]
